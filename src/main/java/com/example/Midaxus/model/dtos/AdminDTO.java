@@ -1,4 +1,4 @@
-package com.example.Midaxus.model.dto;
+package com.example.Midaxus.model.dtos;
 
 public class AdminDTO {
 
