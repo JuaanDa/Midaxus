@@ -36,6 +36,8 @@ public class Student extends User {
     }
 
 
+
+
     /**
      * Constructor completo para inicializar todos los atributos del estudiante.
      *

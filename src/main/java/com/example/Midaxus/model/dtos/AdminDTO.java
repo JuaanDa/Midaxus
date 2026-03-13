@@ -20,8 +20,6 @@ public class AdminDTO {
 
     @Override
     public String toString() {
-        return "AdminDTO{" +
-                "adminId='" + adminId + '\'' +
-                '}';
+        return "AdminDTO{" + "adminId='" + adminId + '\'' + '}';
     }
 }
