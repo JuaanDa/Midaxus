@@ -1,23 +1,32 @@
 package com.example.Midaxus.model.dtos;
 
 public class LoginResponseDTO {
-
-    private String username;
+    private boolean success;
+    private String message;
     private String role;
 
-    public LoginResponseDTO() {}
-
-    public LoginResponseDTO(String username, String role) {
-        this.username = username;
+    public LoginResponseDTO(boolean success, String message, String role) {
+        this.success = success;
+        this.message = message;
         this.role = role;
     }
 
-    public String getUsername() {
-        return username;
+    // Getters y Setters
+
+    public boolean isSuccess() {
+        return success;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public String getRole() {

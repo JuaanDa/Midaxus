@@ -1,8 +1,11 @@
 package com.example.Midaxus.model.entities;
 
+import jakarta.persistence.*;
+
 import java.util.Date;
 
-
+@Entity
+@Table(name = "admin")
 public class Admin extends User {
 
     private String adminId;
@@ -11,9 +14,9 @@ public class Admin extends User {
 
     public Admin(String adminId, String userName, String firstName,
                  String lastName, String id, String email,
-                 String password, Date signInDate) {
+                 String password, Date signInDate, String rol) {
 
-        super(userName, firstName, lastName, id, email, password, signInDate);
+        super(userName, firstName, lastName, id, email, password, signInDate, rol);
         this.adminId = adminId;
     }
 

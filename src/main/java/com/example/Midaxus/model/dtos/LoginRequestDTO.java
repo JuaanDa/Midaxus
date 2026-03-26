@@ -1,23 +1,15 @@
 package com.example.Midaxus.model.dtos;
 
 public class LoginRequestDTO {
-
-    private String username;
+    private String email;
     private String password;
 
-    public LoginRequestDTO() {}
-
-    public LoginRequestDTO(String username, String password) {
-        this.username = username;
-        this.password = password;
+    public String getEmail() {
+        return email;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {

@@ -3,13 +3,11 @@ package com.example.Midaxus.controller;
 import com.example.Midaxus.model.dtos.LoginRequestDTO;
 import com.example.Midaxus.model.dtos.LoginResponseDTO;
 import com.example.Midaxus.services.AuthService;
-
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "*") // permite conexión desde el frontend
+@CrossOrigin("*") // Para permitir peticiones del Front
 public class AuthController {
 
     private final AuthService authService;
@@ -19,10 +17,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO request) {
-
-        LoginResponseDTO response = authService.login(request);
-
-        return ResponseEntity.ok(response);
+    public LoginResponseDTO login(@RequestBody LoginRequestDTO loginRequest) {
+        return authService.login(loginRequest);
     }
 }

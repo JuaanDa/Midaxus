@@ -1,17 +1,27 @@
+
 package com.example.Midaxus.model.entities;
 
+import jakarta.persistence.*;
 import java.util.Date;
 
-
+@Entity
+@Table(name = "users")
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class User {
 
+    @Id
+    private String id;
+
     private String userName;
+    private String rol;
     private String firstName;
     private String lastName;
-    private String id;
     private String email;
     private String password;
+
+    @Temporal(TemporalType.DATE)
     private Date signInDate;
+
 
     public User() {}
 
@@ -21,7 +31,7 @@ public abstract class User {
     }
 
     public User(String userName, String firstName, String lastName,
-                String id, String email, String password, Date signInDate) {
+                String id, String email, String password, Date signInDate, String rol) {
         this.userName = userName;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -29,6 +39,7 @@ public abstract class User {
         this.email = email;
         this.password = password;
         this.signInDate = signInDate;
+        this.rol = rol;
     }
 
     public String getUserName() {
@@ -85,5 +96,13 @@ public abstract class User {
 
     public void setSignInDate(Date signInDate) {
         this.signInDate = signInDate;
+    }
+
+    public String getRol() {
+        return rol;
+    }
+
+    public void setRol(String rol) {
+        this.rol = rol;
     }
 }
