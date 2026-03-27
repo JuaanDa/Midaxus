@@ -1,12 +1,17 @@
 package com.example.Midaxus.model.entities;
 
 
+import jakarta.persistence.*;
+
 import java.util.Date;
 
 /**
  * Representa un estudiante dentro del sistema.
  */
 
+@Entity
+@Table(name = "student")
+@DiscriminatorValue("STUDENT")
 public class Student extends User {
 
     private String studentId;
@@ -16,9 +21,9 @@ public class Student extends User {
 
     public Student(String studentId, String userName, String firstName,
                    String lastName, String id, String email,
-                   String password, Date signInDate) {
+                   String password, Date signInDate, String rol) {
 
-        super(userName, firstName, lastName, id, email, password, signInDate);
+        super(userName, firstName, lastName, id, email, password, signInDate, rol);
         this.studentId = studentId;
     }
 

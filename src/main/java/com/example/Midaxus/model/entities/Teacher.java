@@ -1,27 +1,37 @@
 package com.example.Midaxus.model.entities;
 
 
+import jakarta.persistence.*;
+
 import java.util.Date;
 import java.util.Set;
 
 
+@Entity
+@Table(name = "teacher")
+@DiscriminatorValue("TEACHER")
 public class Teacher extends User {
-
 
     private String teacherId;
 
+    @Temporal(TemporalType.DATE)
+    private Date startDate;
+
+    @ElementCollection
+    @CollectionTable(name = "teacher_subjects",
+            joinColumns = @JoinColumn(name = "teacher_user_id"))
+    @Column(name = "subject")
     private Set<String> subjects;
 
-    private Date startDate;
 
     public Teacher() {}
 
     public Teacher(String teacherId, String userName, String firstName,
                    String lastName, String id, String email,
                    String password, Date signInDate,
-                   Set<String> subjects, Date startDate) {
+                   Set<String> subjects, Date startDate, String rol) {
 
-        super(userName, firstName, lastName, id, email, password, signInDate);
+        super(userName, firstName, lastName, id, email, password, signInDate, rol);
         this.teacherId = teacherId;
         this.subjects = subjects;
         this.startDate = startDate;
