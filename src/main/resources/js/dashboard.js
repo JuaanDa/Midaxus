@@ -14,20 +14,20 @@ function initializeDashboard() {
 // Sidebar Navigation
 function setupSidebarNavigation() {
   const sidebarItems = document.querySelectorAll('.sidebar li');
-  
+
   sidebarItems.forEach(item => {
     item.addEventListener('click', function(e) {
       // Only handle clicks on items with links
       const link = this.querySelector('a');
       if (link) {
         e.preventDefault();
-        
+
         // Remove active class from all items
         sidebarItems.forEach(li => li.classList.remove('active'));
-        
+
         // Add active class to current item
         this.classList.add('active');
-        
+
         // Navigate to the target
         const targetId = link.getAttribute('href').substring(1);
         navigateToScreen(targetId);
@@ -50,7 +50,7 @@ function navigateToScreen(screenId) {
   // Hide all screens
   const screens = document.querySelectorAll('.screen');
   screens.forEach(screen => screen.style.display = 'none');
-  
+
   // Show target screen
   const targetScreen = document.getElementById(screenId);
   if (targetScreen) {
@@ -63,19 +63,19 @@ function navigateToScreen(screenId) {
 function setupFormHandlers() {
   const inputFields = document.querySelectorAll('.input-field');
   const selectFields = document.querySelectorAll('.select-field');
-  
+
   inputFields.forEach(field => {
     field.addEventListener('focus', function() {
       this.style.borderColor = '#3b9a95';
     });
-    
+
     field.addEventListener('blur', function() {
       if (this.value === '') {
         this.style.borderColor = '#d4e3f0';
       }
     });
   });
-  
+
   selectFields.forEach(field => {
     field.addEventListener('change', function() {
       console.log('Selected: ' + this.value);
@@ -86,18 +86,18 @@ function setupFormHandlers() {
 // Session Card Handlers
 function setupSessionCardHandlers() {
   const sessionCards = document.querySelectorAll('.session-card');
-  
+
   sessionCards.forEach(card => {
     card.addEventListener('click', function(e) {
       e.stopPropagation();
-      
+
       // Remove selection from other cards
       sessionCards.forEach(c => c.style.opacity = '1');
-      
+
       // Highlight selected card
       this.style.opacity = '0.8';
       this.style.transform = 'scale(1.05)';
-      
+
       // Update inspector panel
       updateInspectorPanel(this);
     });
@@ -122,7 +122,7 @@ function setupButtonHandlers() {
       handlePrimaryButtonClick(this);
     });
   });
-  
+
   // Secondary buttons
   const secondaryButtons = document.querySelectorAll('.btn-secondary');
   secondaryButtons.forEach(btn => {
@@ -131,7 +131,7 @@ function setupButtonHandlers() {
       handleSecondaryButtonClick(this);
     });
   });
-  
+
   // Outline buttons
   const outlineButtons = document.querySelectorAll('.btn-outline');
   outlineButtons.forEach(btn => {
@@ -144,7 +144,7 @@ function setupButtonHandlers() {
 
 function handlePrimaryButtonClick(button) {
   const buttonText = button.textContent.trim().toLowerCase();
-  
+
   if (buttonText.includes('save')) {
     showNotification('Changes saved successfully!', 'success');
   } else if (buttonText.includes('generate')) {
@@ -156,7 +156,7 @@ function handlePrimaryButtonClick(button) {
   } else if (buttonText.includes('merge')) {
     showNotification('Sections merged successfully!', 'success');
   }
-  
+
   // Add visual feedback
   button.style.transform = 'scale(0.98)';
   setTimeout(() => {
@@ -188,7 +188,7 @@ function showNotification(message, type = 'info') {
     z-index: 1000;
     animation: slideIn 0.3s ease-out;
   `;
-  
+
   if (type === 'success') {
     notification.style.backgroundColor = '#3b9a95';
     notification.innerHTML = '<i class="fas fa-check-circle"></i> ' + message;
@@ -199,9 +199,9 @@ function showNotification(message, type = 'info') {
     notification.style.backgroundColor = '#2196F3';
     notification.innerHTML = '<i class="fas fa-info-circle"></i> ' + message;
   }
-  
+
   document.body.appendChild(notification);
-  
+
   setTimeout(() => {
     notification.style.animation = 'slideOut 0.3s ease-out';
     setTimeout(() => notification.remove(), 300);
