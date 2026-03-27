@@ -6,6 +6,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "admin")
+@DiscriminatorValue("ADMIN")
 public class Admin extends User {
 
     private String adminId;

@@ -11,7 +11,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "student")
-
+@DiscriminatorValue("STUDENT")
 public class Student extends User {
 
     private String studentId;

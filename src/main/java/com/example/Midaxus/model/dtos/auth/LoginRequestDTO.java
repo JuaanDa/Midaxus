@@ -1,4 +1,4 @@
-package com.example.Midaxus.model.dtos;
+package com.example.Midaxus.model.dtos.auth;
 
 public class LoginRequestDTO {
     private String email;
