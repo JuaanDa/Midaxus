@@ -32,7 +32,6 @@ public class Admin extends User {
     @Override
     public String toString() {
         return "Admin{" +
-                "adminId='" + adminId + '\'' +
-                '}';
+                "adminId='" + adminId + '\'' + '}';
     }
 }
