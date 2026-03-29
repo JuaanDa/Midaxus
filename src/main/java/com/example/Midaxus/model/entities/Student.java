@@ -1,19 +1,19 @@
 package com.example.Midaxus.model.entities;
 
 
+import com.example.Midaxus.model.enums.UserType;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Date;
-
-/**
- * Representa un estudiante dentro del sistema.
- */
 
 @Entity
 @Table(name = "student")
 @DiscriminatorValue("STUDENT")
 public class Student extends User {
 
+    @Column(unique = true)
     private String studentId;
 
     public Student() {
@@ -21,9 +21,9 @@ public class Student extends User {
 
     public Student(String studentId, String userName, String firstName,
                    String lastName, String id, String email,
-                   String password, Date signInDate, String rol) {
+                   String password, Date signInDate) {
 
-        super(userName, firstName, lastName, id, email, password, signInDate, rol);
+        super(userName, firstName, lastName, id, email, password, signInDate, UserType.STUDENT);
         this.studentId = studentId;
     }
 

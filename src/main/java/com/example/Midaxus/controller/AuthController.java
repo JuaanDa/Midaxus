@@ -26,27 +26,27 @@ public class AuthController {
         return authService.login(loginRequest);
     }
 
-    // -----------------------
-    // SOLICITAR RESET PASSWORD
-    // -----------------------
-    @PostMapping("/forgot-password")
-    public LoginResponseDTO forgotPassword(@RequestBody Map<String, String> body) {
-        return authService.forgotPassword(body.get("email"));
-    }
+//    // -----------------------
+//    // SOLICITAR RESET PASSWORD
+//    // -----------------------
+//    @PostMapping("/forgot-password")
+//    public LoginResponseDTO forgotPassword(@RequestBody Map<String, String> body) {
+//        return authService.forgotPassword(body.get("email"));
+//    }
 
-    // -----------------------
-    // VALIDAR TOKEN
-    // -----------------------
-    @GetMapping("/validate-reset-token")
-    public LoginResponseDTO validateResetToken(@RequestParam String token) {
-        return authService.validateResetToken(token);
-    }
-
-    // -----------------------
-    // CAMBIAR CONTRASEÑA
-    // -----------------------
-    @PostMapping("/reset-password")
-    public LoginResponseDTO resetPassword(@RequestBody Map<String, String> body) {
-        return authService.resetPassword(body.get("token"), body.get("password"));
-    }
+//    // -----------------------
+//    // VALIDAR TOKEN
+//    // -----------------------
+//    @GetMapping("/validate-reset-token")
+//    public LoginResponseDTO validateResetToken(@RequestParam String token) {
+//        return authService.validateResetToken(token);
+//    }
+//
+//    // -----------------------
+//    // CAMBIAR CONTRASEÑA
+//    // -----------------------
+//    @PostMapping("/reset-password")
+//    public LoginResponseDTO resetPassword(@RequestBody Map<String, String> body) {
+//        return authService.resetPassword(body.get("token"), body.get("password"));
+//    }
 }

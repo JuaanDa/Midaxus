@@ -1,7 +1,10 @@
 package com.example.Midaxus.model.entities;
 
 
+import com.example.Midaxus.model.enums.UserType;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Date;
 import java.util.Set;
@@ -12,16 +15,12 @@ import java.util.Set;
 @DiscriminatorValue("TEACHER")
 public class Teacher extends User {
 
+    @Column(unique = true)
     private String teacherId;
 
     @Temporal(TemporalType.DATE)
     private Date startDate;
 
-    @ElementCollection
-    @CollectionTable(name = "teacher_subjects",
-            joinColumns = @JoinColumn(name = "teacher_user_id"))
-    @Column(name = "subject")
-    private Set<String> subjects;
 
 
     public Teacher() {}
@@ -29,11 +28,10 @@ public class Teacher extends User {
     public Teacher(String teacherId, String userName, String firstName,
                    String lastName, String id, String email,
                    String password, Date signInDate,
-                   Set<String> subjects, Date startDate, String rol) {
+                   Date startDate, UserType userType) {
 
-        super(userName, firstName, lastName, id, email, password, signInDate, rol);
+        super(userName, firstName, lastName, id, email, password, signInDate, UserType.TEACHER);
         this.teacherId = teacherId;
-        this.subjects = subjects;
         this.startDate = startDate;
     }
 
@@ -43,14 +41,6 @@ public class Teacher extends User {
 
     public void setTeacherId(String teacherId) {
         this.teacherId = teacherId;
-    }
-
-    public Set<String> getSubjects() {
-        return subjects;
-    }
-
-    public void setSubjects(Set<String> subjects) {
-        this.subjects = subjects;
     }
 
     public Date getStartDate() {
