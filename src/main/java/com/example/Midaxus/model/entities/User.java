@@ -20,11 +20,6 @@ public abstract class User {
     private String id;
 
     private String userName;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "user_type")
-    private UserType userType;
-
     private String firstName;
     private String lastName;
     private String email;
@@ -47,7 +42,7 @@ public abstract class User {
 
     public User(String userName, String firstName, String lastName,
                 String id, String email, String password,
-                Date signInDate, UserType userType) {
+                Date signInDate) {
 
         this.userName = userName;
         this.firstName = firstName;
@@ -56,7 +51,7 @@ public abstract class User {
         this.email = email;
         this.password = password;
         this.signInDate = signInDate;
-        this.userType = userType;
+
     }
 
     public String getId() {
@@ -73,14 +68,6 @@ public abstract class User {
 
     public void setUserName(String userName) {
         this.userName = userName;
-    }
-
-    public UserType getUserType() {
-        return userType;
-    }
-
-    public void setUserType(UserType userType) {
-        this.userType = userType;
     }
 
     public String getFirstName() {

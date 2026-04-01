@@ -21,7 +21,7 @@ public class Admin extends User {
                  String lastName, String id, String email,
                  String password, Date signInDate) {
 
-        super(userName, firstName, lastName, id, email, password, signInDate, UserType.ADMIN);
+        super(userName, firstName, lastName, id, email, password, signInDate);
         this.adminId = adminId;
     }
 

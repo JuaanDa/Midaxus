@@ -23,7 +23,7 @@ public class Student extends User {
                    String lastName, String id, String email,
                    String password, Date signInDate) {
 
-        super(userName, firstName, lastName, id, email, password, signInDate, UserType.STUDENT);
+        super(userName, firstName, lastName, id, email, password, signInDate);
         this.studentId = studentId;
     }
 

@@ -12,11 +12,12 @@ public class TeacherMapper {
         if (teacher == null) return null;
 
         return new TeacherDTO(teacher.getId(),
-                              teacher.getTeacherId(),
+                              teacher.getTeacherCode(),
                               teacher.getUserName(),
                               teacher.getFirstName(),
                               teacher.getLastName(),
-                              teacher.getEmail());
+                              teacher.getEmail(),
+                              teacher.getPassword());
 
 
     }
@@ -24,11 +25,12 @@ public class TeacherMapper {
         if (dto == null) return null;
 
         Teacher teacher = new Teacher();
-        teacher.setTeacherId(dto.getTeacherId());
+        teacher.setTeacherCode(dto.getTeacherCode());
         teacher.setUserName(dto.getUserName());
         teacher.setFirstName(dto.getFirstName());
         teacher.setLastName(dto.getLastName());
         teacher.setEmail(dto.getEmail());
+        teacher.setPassword(dto.getPassword());
 
         return teacher;
 

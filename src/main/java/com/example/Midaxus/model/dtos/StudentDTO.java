@@ -1,20 +1,31 @@
 package com.example.Midaxus.model.dtos;
 
+import java.util.Date;
+
 public class StudentDTO {
 
-    private String id;
+
     private String studentId;
+    private String firstName;
+    private String lastName;
     private String userName;
     private String email;
+    private String password;
+    private Date signInDate;
 
     public StudentDTO() {}
 
-    public StudentDTO(String id, String studentId, String userName, String email ) {
+    public StudentDTO( String studentId, String firstName, String lastName,
+                       String userName, String email, String password, Date signInDate ) {
 
-        this.id = id;
+
         this.studentId = studentId;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.userName = userName;
         this.email = email;
+        this.password = password;
+        this.signInDate = signInDate;
     }
 
 
@@ -42,21 +53,37 @@ public class StudentDTO {
         this.email = email;
     }
 
-    public String getId() {
-        return id;
+    public String getFirstName() {
+        return firstName;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    @Override
-    public String toString() {
-        return "StudentDTO{" +
-                "id='" + id + '\'' +
-                ", studentId='" + studentId + '\'' +
-                ", userName='" + userName + '\'' +
-                ", email='" + email + '\'' +
-                '}';
+    public String getLastName() {
+        return lastName;
     }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Date getSignInDate() {
+        return signInDate;
+    }
+
+    public void setSignInDate(Date signInDate) {
+        this.signInDate = signInDate;
+    }
+
+
 }

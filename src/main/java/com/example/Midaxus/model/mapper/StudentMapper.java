@@ -3,8 +3,10 @@ package com.example.Midaxus.model.mapper;
 import com.example.Midaxus.model.dtos.StudentDTO;
 import com.example.Midaxus.model.entities.Student;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 
@@ -14,11 +16,33 @@ public class StudentMapper {
     public static StudentDTO toDTO(Student student){
 
         if (student == null) return null;
-        return new StudentDTO(student.getId(),
-                              student.getStudentId(),
-                              student.getUserName(),
-                              student.getEmail());
 
+        return new StudentDTO(
+                student.getStudentId(),
+                student.getFirstName(),
+                student.getLastName(),
+                student.getUserName(),
+                student.getEmail(),
+                student.getPassword(),
+                student.getSignInDate()
+        );
+    }
+
+    public static Student toEntity(StudentDTO dto){
+
+        if (dto == null) return null;
+
+        Student student = new Student();
+
+        student.setStudentId(dto.getStudentId());
+        student.setFirstName(dto.getFirstName());
+        student.setLastName(dto.getLastName());
+        student.setUserName(dto.getUserName());
+        student.setEmail(dto.getEmail());
+        student.setPassword(dto.getPassword());
+
+
+        return student;
     }
 
     public static List<StudentDTO> toDTOlist(List<Student>students){
