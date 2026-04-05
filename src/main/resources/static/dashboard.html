@@ -1,179 +1,265 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Midaxus — Smart Scheduling</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <title>Midaxus – Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="css/dashboard.css">
-  <script src="js/dashboard.js"></script>
+</head>
 <body>
-<<<<<<< HEAD:src/main/resources/dashboard.html
-
-<!-- LOGIN -->
-<div id="login-screen">
-  <div class="login-box">
-    <div class="login-logo">
-      <div class="dot"><i class="fas fa-calendar-alt" style="color:#fff;font-size:.85rem"></i></div>
-      <span>Midaxus</span>
-=======
 <div class="app-container">
-  <div class="navbar-top">
+
+  <!-- ══ NAVBAR ══ -->
+
+  <nav class="navbar-top">
     <div class="logo-area">
       <img src="img/midaxus_icon.png" alt="Midaxus" height="30">
       Midaxus
->>>>>>> 3bf9b3343adf77e350b60ed8530bacba9b0050a6:src/main/resources/static/dashboard.html
     </div>
-    <div class="login-title">Accede a tu panel académico</div>
-    <div class="login-field"><label>Correo electrónico</label><input type="email" placeholder="usuario@universidad.edu" value="admin@midaxus.edu"></div>
-    <div class="login-field"><label>Contraseña</label><input type="password" placeholder="••••••••" value="••••••••"></div>
-    <div class="login-field"><label>Rol (demo)</label><select id="login-role"><option value="admin">Administrador</option><option value="profesor">Profesor</option><option value="estudiante">Estudiante</option></select></div>
-    <button class="btn-login" onclick="doLogin()"><i class="fas fa-sign-in-alt"></i> Iniciar sesión</button>
-    <div style="text-align:center;margin-top:.9rem;font-size:.73rem;color:rgba(255,255,255,.4)">Prueba rápida de rol:</div>
-    <div class="role-badges">
-      <span class="role-badge" onclick="quickLogin('admin',this)">Admin</span>
-      <span class="role-badge" onclick="quickLogin('profesor',this)">Profesor</span>
-      <span class="role-badge" onclick="quickLogin('estudiante',this)">Estudiante</span>
+    <div class="nav-right">
+      <span class="role-badge" id="role-badge"></span>
+      <div class="profile-badge">
+        <span class="avatar" id="user-initials"></span>
+        <span class="user-name" id="user-name"></span>
+        <button class="btn-logout" id="btn-logout" title="Logout">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
     </div>
-  </div>
-</div>
+  </nav>
 
-<!-- NAVBAR -->
-<nav class="navbar" id="main-navbar" style="display:none">
-  <div style="display:flex;align-items:center;gap:.7rem">
-    <button class="hamburger" id="hamburger" onclick="toggleSidebar()"><span></span><span></span><span></span></button>
-    <div class="nav-logo"><div class="dot"><i class="fas fa-calendar-alt" style="color:#fff;font-size:.78rem"></i></div>Midaxus</div>
-  </div>
-  <div class="nav-center"><i class="fas fa-calendar" style="color:var(--muted);font-size:.76rem"></i>&nbsp;Primavera 2026</div>
-  <div class="nav-right">
-    <span class="role-pill" id="role-pill">Admin</span>
-    <div class="nav-avatar" id="nav-avatar">AD</div>
-    <button class="btn-logout" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> <span>Salir</span></button>
-  </div>
-</nav>
+  <div class="main-layout">
 
-<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+    <!-- ══ SIDEBAR ══ -->
+    <aside class="sidebar">
+      <ul id="sidebar-menu"></ul>
+    </aside>
 
-<!-- APP -->
-<div class="app" id="main-app" style="display:none">
-  <aside class="sidebar" id="main-sidebar">
-    <div class="sidebar-label">Principal</div>
-    <div class="sidebar-item active" data-screen="dashboard" onclick="nav(this)"><i class="fas fa-tachometer-alt"></i> Dashboard</div>
-    <div class="sidebar-item" id="nav-schedule" data-screen="schedule" onclick="nav(this)"><i class="fas fa-calendar-check"></i> Horarios</div>
-  </aside>
+    <!-- ══ CONTENT ══ -->
+    <main class="content-panel">
 
-  <main class="content">
-    <div class="page-header"><h1 id="dash-title">Dashboard</h1><div class="page-sub" id="dash-sub">Resumen · Primavera 2026</div></div>
-    <div id="admin-kpis">
-      <div class="kpi-grid">
-        <div class="kpi-card"><div class="kpi-label">Materias activas</div><div class="kpi-val">42</div></div>
-        <div class="kpi-card green"><div class="kpi-label">Clases programadas</div><div class="kpi-val">128</div></div>
-        <div class="kpi-card dark"><div class="kpi-label">Docentes</div><div class="kpi-val">65</div></div>
-        <div class="kpi-card orange"><div class="kpi-label">Aulas</div><div class="kpi-val">28</div></div>
-      </div>
-      <div class="alert alert-warn"><i class="fas fa-exclamation-triangle"></i><div style="flex:1"><strong>3 materias requieren atención</strong> — Conflictos detectados</div><button class="btn btn-ghost btn-sm" onclick="nav(document.querySelector('[data-screen=courses]'))">Revisar</button></div>
-    </div>
-    <div id="prof-kpis" class="hidden">
-      <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">
-        <div class="kpi-card"><div class="kpi-label">Mis materias</div><div class="kpi-val">4</div></div>
-        <div class="kpi-card green"><div class="kpi-label">Clases esta semana</div><div class="kpi-val">8</div></div>
-        <div class="kpi-card dark"><div class="kpi-label">Estudiantes</div><div class="kpi-val">163</div></div>
-      </div>
-      <div class="alert alert-info"><i class="fas fa-info-circle"></i><div>Tienes <strong>2 clases</strong> mañana.</div></div>
-    </div>
-    <div id="stu-kpis" class="hidden">
-      <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">
-        <div class="kpi-card"><div class="kpi-label">Materias inscritas</div><div class="kpi-val">5</div></div>
-        <div class="kpi-card green"><div class="kpi-label">Clases esta semana</div><div class="kpi-val">12</div></div>
-        <div class="kpi-card dark"><div class="kpi-label">Créditos</div><div class="kpi-val">17</div></div>
-      </div>
-    </div>
-    <div class="two-col" style="margin-top:1rem">
-      <div class="card-surface">
-        <h3 style="margin-bottom:.95rem;font-family:'Space Grotesk',sans-serif;font-size:.93rem">Próximos eventos</h3>
-        <div class="events-list">
-          <div class="event-row"><div class="event-dot"></div><div><div class="event-date">20 Mar 2026</div><div class="event-name">Publicación de horarios</div></div></div>
-          <div class="event-row"><div class="event-dot" style="background:var(--teal)"></div><div><div class="event-date">10 Abr 2026</div><div class="event-name">Fin período adición/retiro</div></div></div>
-          <div class="event-row"><div class="event-dot" style="background:var(--warn)"></div><div><div class="event-date">15 May – 5 Jun 2026</div><div class="event-name">Exámenes finales</div></div></div>
-        </div>
-      </div>
-      <div class="card-surface">
-        <h3 style="margin-bottom:.95rem;font-family:'Space Grotesk',sans-serif;font-size:.93rem">Acciones rápidas</h3>
-        <div id="admin-quick" style="display:flex;flex-direction:column;gap:.65rem">
-          <button class="btn btn-primary" onclick="nav(document.querySelector('[data-screen=schedule]'))"><i class="fas fa-calendar-check"></i> Ir al horario</button>
-          <button class="btn btn-ghost" onclick="nav(document.querySelector('[data-screen=publish]'))"><i class="fas fa-paper-plane"></i> Publicar</button>
-        </div>
-        <div id="prof-quick" class="hidden" style="display:flex;flex-direction:column;gap:.65rem">
-          <button class="btn btn-primary" onclick="nav(document.querySelector('[data-screen=my-schedule]'))"><i class="fas fa-calendar-day"></i> Ver mi horario</button>
-        </div>
-        <div id="stu-quick" class="hidden" style="display:flex;flex-direction:column;gap:.65rem">
-          <button class="btn btn-primary" onclick="nav(document.querySelector('[data-screen=my-schedule]'))"><i class="fas fa-calendar-day"></i> Ver mi horario</button>
-          <button class="btn btn-ghost" onclick="nav(document.querySelector('[data-screen=courses]'))"><i class="fas fa-book-open"></i> Ver materias</button>
-        </div>
-      </div>
-    </div>
-</div>
+      <!-- ── DASHBOARD ── -->
+      <section id="screen-dashboard" class="screen">
+        <h1>Dashboard</h1>
+        <p class="section-sub">Resumen de tu horario academico · 2026-I</p>
 
-<!-- SCHEDULE -->
-<div class="screen" id="screen-schedule">
-  <div class="page-header"><h1>Gestión de Horarios</h1><div class="page-sub">Arrastra materias · Toca el aula para asignarla · Primavera 2026</div></div>
-  <div id="schedule-no-access" class="access-denied hidden"><i class="fas fa-lock"></i><h2>Acceso restringido</h2><p>Solo administradores pueden gestionar horarios.</p></div>
-  <div id="schedule-editor">
-    <div class="btn-group">
-      <button class="btn btn-primary" onclick="validateSchedule()"><i class="fas fa-check-double"></i> Validar</button>
-      <button class="btn btn-ghost"><i class="fas fa-download"></i> Exportar</button>
-      <button class="btn btn-ghost" onclick="clearSchedule()"><i class="fas fa-trash-alt"></i> Limpiar</button>
-    </div>
-    <div class="schedule-layout">
-      <div>
-        <div class="course-palette">
-          <div class="palette-title"><i class="fas fa-grip-vertical"></i> Materias disponibles</div>
-          <div class="palette-list" id="palette"></div>
+        <div class="kpi-grid" id="kpi-grid"></div>
+
+        <div class="alert-card" id="conflict-alert" style="display:none;">
+          <i class="fas fa-exclamation-triangle"></i>
+          <div style="flex:1"><strong>3 Cursos necesitan atención</strong> – Conficto de horario detectado</div>
+          <button class="btn-outline" onclick="navigateTo('schedule')">Revisar</button>
         </div>
-        <div style="margin-top:.55rem;font-size:.7rem;color:var(--muted);padding:.38rem;line-height:1.65">
-          <i class="fas fa-info-circle"></i> Arrastra al horario. Toca <strong>🚪 aula</strong> para asignarla. <strong>×</strong> devuelve al panel.
-        </div>
-      </div>
-      <div>
-        <div class="week-wrapper">
-          <div class="week-inner">
-            <div class="week-header-row">
-              <div class="wh"></div>
-              <div class="wh">Lun</div><div class="wh">Mar</div><div class="wh today">Mié</div><div class="wh">Jue</div><div class="wh">Vie</div><div class="wh">Sáb</div>
+
+        <div class="dash-cols">
+          <div class="dash-box">
+            <h3><i class="fas fa-calendar-day"></i> Proximos eventos</h3>
+            <div class="event-list">
+              <div class="event-item"><span class="dot"></span><div><strong>Publicacion Horarios</strong><br><small>Marzo 20, 2026</small></div></div>
+              <div class="event-item"><span class="dot"></span><div><strong>Agregar y quitar creditos</strong><br><small>Abril 10, 2026</small></div></div>
+              <div class="event-item"><span class="dot"></span><div><strong>Examen finales</strong><br><small>Mayo 15 – Junio 5, 2026</small></div></div>
             </div>
-            <div class="week-body" id="week-body"></div>
+          </div>
+          <div class="dash-box" id="quick-actions-box">
+            <h3><i class="fas fa-bolt"></i> Acciones rapidas</h3>
           </div>
         </div>
-        <div class="inspector" id="inspector"><i class="fas fa-info-circle"></i><span id="inspector-text">Selecciona o arrastra una materia para ver detalles.</span></div>
-      </div>
-    </div>
+
+        <!-- Student only -->
+        <div id="student-courses" style="display:none; margin-top:2rem;">
+          <h3 style="margin-bottom:1rem;"><i class="fas fa-book-open"></i> Cursos inscritos</h3>
+          <table class="data-table">
+            <thead><tr><th>Code</th><th>Course</th><th>Instructor</th><th>Days</th><th>Room</th></tr></thead>
+            <tbody>
+            <tr><td>MAT101</td><td>Calculus I</td><td>Dr. Johnson</td><td>Mon / Wed</td><td>301</td></tr>
+            <tr><td>PHY201</td><td>Physics II</td><td>Dr. Smith</td><td>Tue / Thu</td><td>205</td></tr>
+            <tr><td>BIO150</td><td>Biology I</td><td>Dr. Brown</td><td>Fri</td><td>108</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── SCHEDULE ── -->
+      <section id="screen-schedule" class="screen">
+        <h1>Horario semanal</h1>
+        <p class="section-sub" id="schedule-subtitle">2026</p>
+
+        <div class="schedule-toolbar" id="schedule-toolbar"></div>
+
+        <!-- Unassigned pool (Admin only) -->
+        <div id="pool-zone" style="display:none;">
+          <div class="pool-header">
+            <i class="fas fa-inbox"></i> Unscheduled
+            <span class="pool-badge" id="pool-count">0</span>
+          </div>
+          <div class="pool-slots" id="pool-slots"
+               ondragover="event.preventDefault(); this.parentElement.classList.add('drag-over')"
+               ondragleave="this.parentElement.classList.remove('drag-over')"
+               ondrop="onPoolDrop(event)">
+          </div>
+        </div>
+
+        <!-- Grid -->
+        <div class="week-grid-scroll">
+          <div class="week-grid">
+            <div class="grid-header">
+              <div class="hcell time-label"></div>
+              <div class="hcell">LUNES</div>
+              <div class="hcell">MARTES</div>
+              <div class="hcell">MIERCOLES</div>
+              <div class="hcell">JUEVES</div>
+              <div class="hcell">VIERNES</div>
+              <div class="hcell">SABADO</div>
+            </div>
+            <div id="grid-body"></div>
+          </div>
+        </div>
+
+        <!-- Inspector -->
+        <div class="inspector" id="inspector" style="display:none;">
+          <div id="inspector-info"></div>
+          <div id="inspector-actions" style="margin-top:.8rem; display:flex; gap:.5rem;"></div>
+        </div>
+      </section>
+
+      <!-- ── COURSES (Admin) ── -->
+      <section id="screen-courses" class="screen">
+        <h1>Course Management</h1>
+        <p class="section-sub">Manage courses for the semester</p>
+        <button class="btn-primary" style="margin-bottom:1.5rem;"><i class="fas fa-plus"></i> New Course</button>
+        <table class="data-table">
+          <thead><tr><th>Code</th><th>Course</th><th>Instructor</th><th>Enrollment</th><th>Status</th></tr></thead>
+          <tbody>
+          <tr><td>MAT101</td><td>Calculus I</td><td>Dr. Johnson</td><td>45</td><td><span class="badge green">Active</span></td></tr>
+          <tr><td>PHY201</td><td>Physics II</td><td>Dr. Smith</td><td>38</td><td><span class="badge green">Active</span></td></tr>
+          <tr><td>CHEM100</td><td>General Chemistry</td><td>Dr. Lewis</td><td>7</td><td><span class="badge red">Below Min</span></td></tr>
+          <tr><td>BIO150</td><td>Biology I</td><td>Dr. Brown</td><td>42</td><td><span class="badge green">Active</span></td></tr>
+          </tbody>
+        </table>
+        <div class="info-box warn">
+          <i class="fas fa-lightbulb"></i>
+          <div><strong>Suggestion:</strong> CHEM100 has only 7 students (below minimum of 10). Consider merging sections.
+            <div style="margin-top:.8rem; display:flex; gap:.5rem;">
+              <button class="btn-primary">Merge Sections</button>
+              <button class="btn-outline">Dismiss</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── FACULTY (Admin) ── -->
+      <section id="screen-teachers" class="screen">
+        <h1>Faculty Management</h1>
+        <p class="section-sub">Register and manage faculty members</p>
+        <button class="btn-primary" style="margin-bottom:1.5rem;"><i class="fas fa-user-plus"></i> Add Faculty</button>
+        <div class="form-row"><label>Faculty Name</label><input class="field" placeholder="Full name"></div>
+        <div class="form-row"><label>Email</label><input class="field" placeholder="faculty@university.edu"></div>
+        <div class="form-row">
+          <label>Employment Type</label>
+          <select class="field">
+            <option>Full-Time</option><option>Part-Time</option><option>Contract</option><option>Visiting</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label>Courses Assigned</label>
+          <div class="tag-row">
+            <span class="tag">MAT101</span><span class="tag">PHY201</span>
+            <span class="tag tag-add"><i class="fas fa-plus-circle"></i> Add</span>
+          </div>
+        </div>
+        <button class="btn-primary"><i class="fas fa-save"></i> Save Faculty Member</button>
+      </section>
+
+      <!-- ── MY SCHEDULE (Teacher) ── -->
+      <section id="screen-my-schedule" class="screen">
+        <h1>My Teaching Schedule</h1>
+        <p class="section-sub">Your assigned classes for 2026-I</p>
+        <table class="data-table">
+          <thead><tr><th>Code</th><th>Course</th><th>Group</th><th>Days</th><th>Time</th><th>Room</th></tr></thead>
+          <tbody>
+          <tr><td>MAT101</td><td>Calculus I</td><td>G01</td><td>Mon / Wed</td><td>08:00–09:30</td><td>301</td></tr>
+          <tr><td>MAT101</td><td>Calculus I</td><td>G02</td><td>Tue / Thu</td><td>09:45–11:15</td><td>301</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ── AVAILABILITY (Teacher) ── -->
+      <section id="screen-availability" class="screen">
+        <h1>My Availability</h1>
+        <p class="section-sub">Click cells to mark your available hours</p>
+        <div class="avail-grid" id="avail-grid"></div>
+        <button class="btn-primary" style="margin-top:1.5rem;"><i class="fas fa-save"></i> Save Availability</button>
+      </section>
+
+      <!-- ── GRADES (Student) ── -->
+      <section id="screen-grades" class="screen">
+        <h1>Mis Notas </h1>
+        <p class="section-sub">RENDIMIENTO ACADEMICO · 2026-I</p>
+        <table class="data-table">
+          <thead><tr><th>Course</th><th>Partial 1</th><th>Partial 2</th><th>Final</th><th>Status</th></tr></thead>
+          <tbody>
+          <tr><td>Calculus I</td><td>3.8</td><td>4.1</td><td>–</td><td><span class="badge green">Passing</span></td></tr>
+          <tr><td>Physics II</td><td>3.2</td><td>3.5</td><td>–</td><td><span class="badge green">Passing</span></td></tr>
+          <tr><td>Biology I</td><td>4.5</td><td>–</td><td>–</td><td><span class="badge green">Passing</span></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ── PUBLISH (Admin) ── -->
+      <section id="screen-publication" class="screen">
+        <h1>Publish Schedule</h1>
+        <p class="section-sub">Review and publish the official academic schedule</p>
+        <div class="info-box success">
+          <i class="fas fa-check-circle"></i>
+          <div><strong>✓ All validations passed</strong>
+            <p style="margin-top:.3rem; font-size:.88rem;">No conflicts · All classrooms assigned · Faculty available</p>
+          </div>
+        </div>
+        <div class="details-block">
+          <div class="detail-row"><span>Semester</span><strong>Spring 2026</strong></div>
+          <div class="detail-row"><span>Total Courses</span><strong>42</strong></div>
+          <div class="detail-row"><span>Total Classes</span><strong>128</strong></div>
+          <div class="detail-row"><span>Publication Date</span><strong>March 20, 2026</strong></div>
+        </div>
+        <div class="info-box warn" style="margin-bottom:1.5rem;">
+          <i class="fas fa-bell"></i> Faculty and students will be notified via email upon publication.
+        </div>
+        <button class="btn-primary"><i class="fas fa-paper-plane"></i> Publish Schedule</button>
+      </section>
+
+      <!-- ── SETTINGS (Admin) ── -->
+      <section id="screen-settings" class="screen">
+        <h1>Settings</h1>
+        <p class="section-sub">Configure system parameters and constraints</p>
+        <div class="form-row">
+          <label>Class Hours</label>
+          <div style="display:flex; gap:.8rem; align-items:center;">
+            <input class="field" style="max-width:110px;" value="08:00">
+            <span>to</span>
+            <input class="field" style="max-width:110px;" value="18:00">
+          </div>
+        </div>
+        <div class="form-row">
+          <label>Lunch Break</label>
+          <div style="display:flex; gap:.8rem; align-items:center;">
+            <input class="field" style="max-width:110px;" value="12:00">
+            <span>to</span>
+            <input class="field" style="max-width:110px;" value="13:30">
+          </div>
+        </div>
+        <div class="form-row"><label>Min. Students / Course</label><input class="field" style="max-width:100px;" value="10"></div>
+        <div class="form-row"><label>Classroom Capacity</label><input class="field" style="max-width:100px;" value="40"></div>
+        <button class="btn-primary"><i class="fas fa-save"></i> Save Settings</button>
+      </section>
+
+    </main>
   </div>
 </div>
 
-<!-- MY SCHEDULE -->
-<div class="screen" id="screen-my-schedule">
-</div>
+<div id="toast-root"></div>
 
-<!-- ROOM MODAL -->
-<div class="room-modal-overlay" id="room-modal" style="display:none" onclick="closeRoomModal(event)">
-  <div class="room-modal" onclick="event.stopPropagation()">
-    <h3><i class="fas fa-door-open" style="color:var(--accent);margin-right:.5rem"></i>Asignar aula</h3>
-    <div style="font-size:.78rem;color:var(--muted);margin-bottom:.82rem" id="room-modal-context"></div>
-    <div class="room-grid" id="room-grid"></div>
-    <div style="font-size:.74rem;color:var(--muted);margin-bottom:.38rem">O ingresa una aula personalizada:</div>
-    <div class="room-custom">
-      <input type="text" id="room-custom-input" placeholder="Ej: Lab-5, Auditorio A…">
-      <button class="btn btn-primary btn-sm" onclick="assignCustomRoom()">Asignar</button>
-    </div>
-    <div style="display:flex;justify-content:flex-end;margin-top:.9rem">
-      <button class="btn btn-ghost btn-sm" onclick="closeRoomModal()">Cancelar</button>
-    </div>
-  </div>
-</div>
+<script src="js/dashboard.js"></script>
 
-<!-- TOAST -->
-<div class="toast" id="toast"><i class="fas fa-check"></i><span id="toast-msg"></span></div>
-
-<script>
+</body>
+</html>

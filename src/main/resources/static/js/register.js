@@ -47,17 +47,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Basic validation
             if (!name || !email || !password || !confirmPassword) {
-                showNotification('Please fill in all fields', 'error');
+                showNotification('LLena todos los campos', 'error');
                 return;
             }
 
             if (password !== confirmPassword) {
-                showNotification('Passwords do not match', 'error');
+                showNotification('Las contraseñas no coinciden', 'error');
                 return;
             }
 
             if (password.length < 6) {
-                showNotification('Password must be at least 6 characters', 'error');
+                showNotification('La contraseña debe tener 6 caracteres', 'error');
                 return;
             }
 
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 password
             });
 
-            showNotification('Account created successfully! Redirecting to login...', 'success');
+            showNotification('Cuenta creada satistafctoriamente! Bienvenido a Midaxus   ...', 'success');
             
             // Redirect to login page
             setTimeout(() => {
