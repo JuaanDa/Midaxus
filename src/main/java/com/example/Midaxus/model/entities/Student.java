@@ -3,27 +3,29 @@ package com.example.Midaxus.model.entities;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.Date;
-
-/**
- * Representa un estudiante dentro del sistema.
- */
+import java.util.List;
 
 @Entity
 @Table(name = "student")
 @DiscriminatorValue("STUDENT")
 public class Student extends User {
 
+    @Column(unique = true)
     private String studentId;
+
+    @OneToMany(mappedBy = "student")
+    List<Enrollment>enrollments = new ArrayList<>();
 
     public Student() {
     }
 
     public Student(String studentId, String userName, String firstName,
                    String lastName, String id, String email,
-                   String password, Date signInDate, String rol) {
+                   String password, Date signInDate) {
 
-        super(userName, firstName, lastName, id, email, password, signInDate, rol);
+        super(userName, firstName, lastName, id, email, password, signInDate);
         this.studentId = studentId;
     }
 

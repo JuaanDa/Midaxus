@@ -3,12 +3,14 @@ package com.example.Midaxus.model.dtos.auth;
 public class LoginResponseDTO {
     private boolean success;
     private String message;
-    private String role;
+    private String userType;
+    private Object data;
 
-    public LoginResponseDTO(boolean success, String message, String role) {
+    public LoginResponseDTO(boolean success, String message, String userType, Object data) {
         this.success = success;
         this.message = message;
-        this.role = role;
+        this.userType = userType;
+        this.data = data;
     }
 
     // Getters y Setters
@@ -29,11 +31,19 @@ public class LoginResponseDTO {
         this.message = message;
     }
 
-    public String getRole() {
-        return role;
+    public String getUserType() {
+        return userType;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setUserType(String userType) {
+        this.userType = userType;
+    }
+
+    public Object getData() {
+        return data;
+    }
+
+    public void setData(Object data) {
+        this.data = data;
     }
 }

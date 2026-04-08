@@ -9,15 +9,16 @@ import java.util.Date;
 @DiscriminatorValue("ADMIN")
 public class Admin extends User {
 
+    @Column(unique = true)
     private String adminId;
 
     public Admin() {}
 
     public Admin(String adminId, String userName, String firstName,
                  String lastName, String id, String email,
-                 String password, Date signInDate, String rol) {
+                 String password, Date signInDate) {
 
-        super(userName, firstName, lastName, id, email, password, signInDate, rol);
+        super(userName, firstName, lastName, id, email, password, signInDate);
         this.adminId = adminId;
     }
 
@@ -27,11 +28,5 @@ public class Admin extends User {
 
     public void setAdminId(String adminId) {
         this.adminId = adminId;
-    }
-
-    @Override
-    public String toString() {
-        return "Admin{" +
-                "adminId='" + adminId + '\'' + '}';
     }
 }
