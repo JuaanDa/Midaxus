@@ -1,14 +1,10 @@
 package com.example.Midaxus.model.entities;
 
 
-import com.example.Midaxus.model.enums.UserType;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 
 @Entity
@@ -32,7 +28,7 @@ public class Teacher extends User {
     public Teacher(String teacherCode, String userName, String firstName,
                    String lastName, String id, String email,
                    String password, Date signInDate,
-                   Date startDate, UserType userType) {
+                   Date startDate) {
 
         super(userName, firstName, lastName, id, email, password, signInDate);
         this.teacherCode = teacherCode;

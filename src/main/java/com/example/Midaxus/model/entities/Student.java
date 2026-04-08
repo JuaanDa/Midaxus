@@ -1,12 +1,11 @@
 package com.example.Midaxus.model.entities;
 
 
-import com.example.Midaxus.model.enums.UserType;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "student")
@@ -15,6 +14,9 @@ public class Student extends User {
 
     @Column(unique = true)
     private String studentId;
+
+    @OneToMany(mappedBy = "student")
+    List<Enrollment>enrollments = new ArrayList<>();
 
     public Student() {
     }

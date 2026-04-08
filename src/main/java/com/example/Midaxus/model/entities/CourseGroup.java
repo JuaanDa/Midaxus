@@ -2,6 +2,10 @@ package com.example.Midaxus.model.entities;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 @Entity
 @Table(name = "course_group")
 public class CourseGroup {
@@ -24,15 +28,21 @@ public class CourseGroup {
     private AcademicPeriod academicPeriod;
     private int capacity;
 
+    @OneToMany(mappedBy = "courseGroup")
+    private  List<Enrollment>enrollments = new ArrayList<>();
+
+
     public CourseGroup(){}
 
-    public CourseGroup(String courseGroupId, Teacher teacher, String code, Subject subject, AcademicPeriod academicperiod, int capacity) {
+    public CourseGroup(String courseGroupId, Teacher teacher, String code, Subject subject, AcademicPeriod academicPeriod, int capacity, List<Enrollment> enrollments, List<Enrollment> enrollments1) {
         this.courseGroupId = courseGroupId;
         this.teacher = teacher;
         this.code = code;
         this.subject = subject;
-        this.academicPeriod = academicperiod;
+        this.academicPeriod = academicPeriod;
         this.capacity = capacity;
+        this.enrollments = enrollments;
+        this.enrollments = enrollments1;
     }
 
     public String getCourseGroupId() {
@@ -83,5 +93,11 @@ public class CourseGroup {
         this.capacity = capacity;
     }
 
+    public List<Enrollment> getEnrollments() {
+        return enrollments;
+    }
 
+    public void setEnrollments(List<Enrollment> enrollments) {
+        this.enrollments = enrollments;
+    }
 }
