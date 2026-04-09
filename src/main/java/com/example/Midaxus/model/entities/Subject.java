@@ -1,47 +1,79 @@
 package com.example.Midaxus.model.entities;
-import java.time.Duration;
-import java.util.Objects;
 
+import jakarta.persistence.*;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "subject")
 public class Subject {
 
-        private String idSubject;
-        private String nameSubject;
-        private String code;
-        private int sessionPerWeek;
-        private Duration sessionDuration;
+    @Id
+    private String idSubject;
 
-        // Getters
-        public String getIdSubject() { return idSubject; }
-        public String getNameSubject() { return nameSubject; }
-        public String getCode() { return code; }
-        public int getSessionPerWeek() { return sessionPerWeek; }
-        public Duration getSessionDuration() { return sessionDuration; }
+    @Column(name = "subject_name")
+    private String subjectName;
 
-        // Setters
-        public void setIdSubject(String idSubject) { this.idSubject = idSubject; }
-        public void setNameSubject(String nameSubject) { this.nameSubject = nameSubject; }
-        public void setCode(String code) { this.code = code; }
-        public void setSessionPerWeek(int sessionPerWeek) { this.sessionPerWeek = sessionPerWeek; }
-        public void setSessionDuration(Duration sessionDuration) { this.sessionDuration = sessionDuration; }
+    @Column(name = "sessions_per_week")
+    private int sessionPerWeek;
 
-        @Override
-        public String toString() {
-            return "Subject{" +
-                    "idSubject='" + idSubject + '\'' +
-                    ", nameSubject='" + nameSubject + '\'' +
-                    ", code='" + code + '\'' +
-                    ", sessionPerWeek=" + sessionPerWeek +
-                    ", sessionDuration=" + sessionDuration +
-                    '}';
-        }
+    @Column(name = "duration_minutes")
+    private int durationMinutes;
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof Subject that)) return false;
-            return Objects.equals(idSubject, that.idSubject);
-        }
-        @Override
-        public int hashCode() { return Objects.hash(idSubject); }
+    @OneToMany(mappedBy = "subject")
+    private List<CourseGroup> courseGroups = new ArrayList<>();
+
+    public Subject() {}
+
+    public Subject(String idSubject, String subjectName, int sessionPerWeek, int durationMinutes) {
+        this.idSubject = idSubject;
+        this.subjectName = subjectName;
+        this.sessionPerWeek = sessionPerWeek;
+        this.durationMinutes = durationMinutes;
     }
 
+    public String getIdSubject() {
+        return idSubject;
+    }
+
+    public void setIdSubject(String idSubject) {
+        this.idSubject = idSubject;
+    }
+
+    public String getSubjectName() {
+        return subjectName;
+    }
+
+    public void setSubjectName(String subjectName) {
+        this.subjectName = subjectName;
+    }
+
+    public int getSessionPerWeek() {
+        return sessionPerWeek;
+    }
+
+    public void setSessionPerWeek(int sessionPerWeek) {
+        this.sessionPerWeek = sessionPerWeek;
+    }
+
+
+    public int getDurationMinutes() {
+        return durationMinutes;
+    }
+
+    public void setDurationMinutes(int durationMinutes) {
+        this.durationMinutes = durationMinutes;
+    }
+
+    public List<CourseGroup> getCourseGroups() {
+        return courseGroups;
+    }
+
+    public void setCourseGroups(List<CourseGroup> courseGroups) {
+        this.courseGroups = courseGroups;
+    }
+
+
+}

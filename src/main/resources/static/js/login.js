@@ -42,7 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!loginForm) return;
 
   loginForm.addEventListener('submit', async (e) => {
-
     e.preventDefault();
 
     const email = document.getElementById('email').value.trim();
@@ -56,33 +55,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
 
-      const response = await fetch('/auth/login', {   // 🔹 ruta relativa
+      const response = await fetch('/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          username: email,
-          password: password
+          email: email,        // ✔ CORREGIDO
+          password: password   // ✔ CORREGIDO
         })
       });
 
-      if (!response.ok) {
-        throw new Error("Credenciales inválidas");
-      }
-
       const data = await response.json();
-
       console.log("Respuesta del servidor:", data);
+
+      // Validación REAL del éxito
+      if (!data.success) {
+        showNotification(data.message, 'error');
+        return;
+      }
 
       showNotification('Login exitoso, redirigiendo...', 'success');
 
-      // Guardar usuario
       if (remember) {
         localStorage.setItem("user", JSON.stringify(data));
       }
 
-      // 🔹 Redirección (solo un dashboard)
       setTimeout(() => {
         window.location.href = "dashboard.html";
       }, 1200);
@@ -96,11 +94,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       console.error("Error login:", error);
-
-      showNotification('Correo o contraseña incorrectos', 'error');
-
+      showNotification('Error en el servidor', 'error');
     }
-
   });
 
 });

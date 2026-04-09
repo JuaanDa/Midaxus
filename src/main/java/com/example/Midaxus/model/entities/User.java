@@ -1,17 +1,33 @@
+
 package com.example.Midaxus.model.entities;
+
+import jakarta.persistence.*;
 
 import java.util.Date;
 
-
+@Entity
+@Table(name = "users")
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "dtype")
 public abstract class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
     private String userName;
     private String firstName;
     private String lastName;
-    private String id;
     private String email;
     private String password;
+
+    private String resetToken;
+    private Date resetTokenExpiration;
+
+
+    @Temporal(TemporalType.DATE)
     private Date signInDate;
+
 
     public User() {}
 
@@ -21,7 +37,9 @@ public abstract class User {
     }
 
     public User(String userName, String firstName, String lastName,
-                String id, String email, String password, Date signInDate) {
+                String id, String email, String password,
+                Date signInDate) {
+
         this.userName = userName;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -29,6 +47,15 @@ public abstract class User {
         this.email = email;
         this.password = password;
         this.signInDate = signInDate;
+
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getUserName() {
@@ -55,14 +82,6 @@ public abstract class User {
         this.lastName = lastName;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -77,6 +96,22 @@ public abstract class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getResetToken() {
+        return resetToken;
+    }
+
+    public void setResetToken(String resetToken) {
+        this.resetToken = resetToken;
+    }
+
+    public Date getResetTokenExpiration() {
+        return resetTokenExpiration;
+    }
+
+    public void setResetTokenExpiration(Date resetTokenExpiration) {
+        this.resetTokenExpiration = resetTokenExpiration;
     }
 
     public Date getSignInDate() {

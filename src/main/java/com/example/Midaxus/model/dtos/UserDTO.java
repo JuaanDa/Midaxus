@@ -1,22 +1,21 @@
 package com.example.Midaxus.model.dtos;
 
-public class TeacherDTO {
+public class UserDTO {
 
-    private String id;
+    private String userType;
     private String teacherCode;
+    private String studentId;
     private String userName;
     private String firstName;
     private String lastName;
-    private String password;
     private String email;
+    private String password;
 
-    public TeacherDTO() {}
+    public UserDTO(){}
 
-    public TeacherDTO(String id, String teacherCode, String userName,
-                      String firstName, String lastName, String email,
-                      String password) {
-        this.id = id;
-        this.teacherCode = teacherCode;
+    public UserDTO(String userType,String teacherCode,String studentId, String userName, String firstName,
+                   String lastName, String email, String password) {
+        this.userType = userType;
         this.userName = userName;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -24,12 +23,20 @@ public class TeacherDTO {
         this.password = password;
     }
 
-    public String getId() {
-        return id;
+    public String getUserType() {
+        return userType;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setUserType(String userType) {
+        this.userType = userType;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getTeacherCode() {
@@ -40,12 +47,12 @@ public class TeacherDTO {
         this.teacherCode = teacherCode;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getStudentId() {
+        return studentId;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setStudentId(String studentId) {
+        this.studentId = studentId;
     }
 
     public String getFirstName() {

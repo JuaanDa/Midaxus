@@ -1,15 +1,22 @@
 package com.example.Midaxus.model.entities;
 
 
+import jakarta.persistence.*;
+
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-/**
- * Representa un estudiante dentro del sistema.
- */
-
+@Entity
+@Table(name = "student")
+@DiscriminatorValue("STUDENT")
 public class Student extends User {
 
+    @Column(unique = true)
     private String studentId;
+
+    @OneToMany(mappedBy = "student")
+    List<Enrollment>enrollments = new ArrayList<>();
 
     public Student() {
     }

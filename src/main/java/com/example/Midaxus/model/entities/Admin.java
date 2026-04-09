@@ -1,10 +1,15 @@
 package com.example.Midaxus.model.entities;
 
+import jakarta.persistence.*;
+
 import java.util.Date;
 
-
+@Entity
+@Table(name = "admin")
+@DiscriminatorValue("ADMIN")
 public class Admin extends User {
 
+    @Column(unique = true)
     private String adminId;
 
     public Admin() {}
@@ -23,12 +28,5 @@ public class Admin extends User {
 
     public void setAdminId(String adminId) {
         this.adminId = adminId;
-    }
-
-    @Override
-    public String toString() {
-        return "Admin{" +
-                "adminId='" + adminId + '\'' +
-                '}';
     }
 }

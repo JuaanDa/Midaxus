@@ -1,37 +1,24 @@
-package com.example.Midaxus.model.entities;
+package com.example.Midaxus.model.dtos;
 
+import com.example.Midaxus.model.entities.CourseGroup;
+import com.example.Midaxus.model.entities.Student;
 import com.example.Midaxus.model.enums.EnrollmentStatus;
-import jakarta.persistence.*;
 
-import javax.print.attribute.standard.MediaSize;
+public class EnrollmentDTO {
 
-@Entity
-@Table(name = "enrollment")
-public class Enrollment {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String enrollmentId;
-
-    @ManyToOne
-    @JoinColumn(name = "student_id")
     private Student student;
-    @ManyToOne
-    @JoinColumn(name = "course_group_id")
     private CourseGroup courseGroup;
-
-    @Enumerated(EnumType.STRING)
     private EnrollmentStatus status;
 
-    public Enrollment(String enrollmentId, Student student,
-                      CourseGroup courseGroup, EnrollmentStatus status) {
+    public EnrollmentDTO(String enrollmentId, Student student, CourseGroup courseGroup, EnrollmentStatus status) {
         this.enrollmentId = enrollmentId;
         this.student = student;
         this.courseGroup = courseGroup;
         this.status = status;
     }
-    public Enrollment(){}
 
+    public EnrollmentDTO(){};
 
     public String getEnrollmentId() {
         return enrollmentId;

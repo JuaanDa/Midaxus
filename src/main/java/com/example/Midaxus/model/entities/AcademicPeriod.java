@@ -1,34 +1,110 @@
 package com.example.Midaxus.model.entities;
-import java.util.Objects;
+
+
+import jakarta.persistence.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "academic_period")
 public class AcademicPeriod {
 
-        private String code;
-        private String name;
+    @Id
+    private String periodId;
+    private String code;
+    private String description;
 
-        // Getters
-        public String getCode() { return code; }
-        public String getName() { return name; }
 
-        // Setters
-        public void setCode(String code) { this.code = code; }
-        public void setName(String name) { this.name = name; }
+    @Column(name = "start_date")
+    private LocalDate startDate;
+    @Column(name = "end_date")
+    private LocalDate endDate;
 
-        @Override
-        public String toString() {
-            return "AcademicPeriod{" +
-                    "code='" + code + '\'' +
-                    ", name='" + name + '\'' +
-                    '}';
-        }
+    private LocalDateTime enrollmentStartDate;
+    private LocalDateTime enrollmentEndDate;
+    @OneToMany(mappedBy = "academicPeriod")
+    private List<CourseGroup> courseGroups = new ArrayList<>();
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof AcademicPeriod that)) return false;
-            return Objects.equals(code, that.code);
-        }
-        @Override
-        public int hashCode() { return Objects.hash(code); }
+
+    public AcademicPeriod(){}
+
+    public AcademicPeriod(String periodId, String code, String description,
+                          LocalDate startDate, LocalDate endDate, LocalDateTime enrollmentStartDate,
+                          LocalDateTime enrollmentEndDate) {
+        this.periodId = periodId;
+        this.code = code;
+        this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.enrollmentStartDate = enrollmentStartDate;
+        this.enrollmentEndDate = enrollmentEndDate;
 
     }
 
+    public String getPeriodId() {
+        return periodId;
+    }
+
+    public void setPeriodId(String periodId) {
+        this.periodId = periodId;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    public LocalDateTime getEnrollmentStartDate() {
+        return enrollmentStartDate;
+    }
+
+    public void setEnrollmentStartDate(LocalDateTime enrollmentStartDate) {
+        this.enrollmentStartDate = enrollmentStartDate;
+    }
+
+    public LocalDateTime getEnrollmentEndDate() {
+        return enrollmentEndDate;
+    }
+
+    public void setEnrollmentEndDate(LocalDateTime enrollmentEndDate) {
+        this.enrollmentEndDate = enrollmentEndDate;
+    }
+
+    public List<CourseGroup> getCourseGroups() {
+        return courseGroups;
+    }
+
+    public void setCourseGroups(List<CourseGroup> courseGroups) {
+        this.courseGroups = courseGroups;
+    }
+}

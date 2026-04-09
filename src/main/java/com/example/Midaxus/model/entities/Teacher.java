@@ -1,46 +1,54 @@
 package com.example.Midaxus.model.entities;
 
 
+import jakarta.persistence.*;
+
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 
 
+@Entity
+@Table(name = "teacher")
+@DiscriminatorValue("TEACHER")
 public class Teacher extends User {
 
+    @Column(unique = true)
+    private String teacherCode;
 
-    private String teacherId;
-
-    private Set<String> subjects;
-
+    @Temporal(TemporalType.DATE)
     private Date startDate;
+
+    @OneToMany(mappedBy = "teacher")
+    private List<CourseGroup> courseGroups;
+
+
 
     public Teacher() {}
 
-    public Teacher(String teacherId, String userName, String firstName,
+    public Teacher(String teacherCode, String userName, String firstName,
                    String lastName, String id, String email,
                    String password, Date signInDate,
-                   Set<String> subjects, Date startDate) {
+                   Date startDate) {
 
         super(userName, firstName, lastName, id, email, password, signInDate);
-        this.teacherId = teacherId;
-        this.subjects = subjects;
+        this.teacherCode = teacherCode;
         this.startDate = startDate;
     }
 
-    public String getTeacherId() {
-        return teacherId;
+    public String getTeacherCode() {
+        return teacherCode;
     }
 
-    public void setTeacherId(String teacherId) {
-        this.teacherId = teacherId;
+    public void setTeacherCode(String teacherCode) {
+        this.teacherCode = teacherCode;
     }
 
-    public Set<String> getSubjects() {
-        return subjects;
+    public List<CourseGroup> getCourseGroups() {
+        return courseGroups;
     }
 
-    public void setSubjects(Set<String> subjects) {
-        this.subjects = subjects;
+    public void setCourseGroups(List<CourseGroup> courseGroups) {
+        this.courseGroups = courseGroups;
     }
 
     public Date getStartDate() {

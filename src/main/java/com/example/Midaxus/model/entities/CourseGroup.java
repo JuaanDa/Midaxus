@@ -1,37 +1,103 @@
 package com.example.Midaxus.model.entities;
-import java.util.Objects;
+
+import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+@Entity
+@Table(name = "course_group")
 public class CourseGroup {
 
-        private String courseGroupId;  // p.ej. "CS101-G1"
-        private String courseCode;     // p.ej. "CS101"
-        private String groupLabel;     // p.ej. "G1"
+    @Id
+    private String courseGroupId;
 
-        // Getters
-        public String getCourseGroupId() { return courseGroupId; }
-        public String getCourseCode() { return courseCode; }
-        public String getGroupLabel() { return groupLabel; }
+    @ManyToOne
+    @JoinColumn(name = "teacher_id")
+    private Teacher teacher;
 
-        // Setters
-        public void setCourseGroupId(String courseGroupId) { this.courseGroupId = courseGroupId; }
-        public void setCourseCode(String courseCode) { this.courseCode = courseCode; }
-        public void setGroupLabel(String groupLabel) { this.groupLabel = groupLabel; }
+    private String code;
 
-        @Override
-        public String toString() {
-            return "CourseGroup{" +
-                    "courseGroupId='" + courseGroupId + '\'' +
-                    ", courseCode='" + courseCode + '\'' +
-                    ", groupLabel='" + groupLabel + '\'' +
-                    '}';
-        }
+    @ManyToOne
+    @JoinColumn(name = "subject_id")
+    private Subject subject;
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof CourseGroup that)) return false;
-            return Objects.equals(courseGroupId, that.courseGroupId);
-        }
-        @Override
-        public int hashCode() { return Objects.hash(courseGroupId); }
+    @ManyToOne
+    @JoinColumn(name = "academic_period_id")
+    private AcademicPeriod academicPeriod;
+    private int capacity;
+
+    @OneToMany(mappedBy = "courseGroup")
+    private  List<Enrollment>enrollments = new ArrayList<>();
+
+
+    public CourseGroup(){}
+
+    public CourseGroup(String courseGroupId, Teacher teacher, String code, Subject subject, AcademicPeriod academicPeriod, int capacity, List<Enrollment> enrollments, List<Enrollment> enrollments1) {
+        this.courseGroupId = courseGroupId;
+        this.teacher = teacher;
+        this.code = code;
+        this.subject = subject;
+        this.academicPeriod = academicPeriod;
+        this.capacity = capacity;
+        this.enrollments = enrollments;
+        this.enrollments = enrollments1;
     }
 
+    public String getCourseGroupId() {
+        return courseGroupId;
+    }
+
+    public void setCourseGroupId(String courseGroupId) {
+        this.courseGroupId = courseGroupId;
+    }
+
+    public Teacher getTeacher() {
+        return teacher;
+    }
+
+    public void setTeacher(Teacher teacher) {
+        this.teacher = teacher;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public Subject getSubject() {
+        return subject;
+    }
+
+    public void setSubject(Subject subject) {
+        this.subject = subject;
+    }
+
+    public AcademicPeriod getAcademicPeriod() {
+        return academicPeriod;
+    }
+
+    public void setAcademicPeriod(AcademicPeriod academicPeriod) {
+        this.academicPeriod = academicPeriod;
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
+
+    public List<Enrollment> getEnrollments() {
+        return enrollments;
+    }
+
+    public void setEnrollments(List<Enrollment> enrollments) {
+        this.enrollments = enrollments;
+    }
+}
