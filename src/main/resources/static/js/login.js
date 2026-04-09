@@ -86,6 +86,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 1200);
 
     } catch (error) {
+      // Dentro del try, después de recibir data
+      sessionStorage.setItem("user", JSON.stringify(data)); // siempre
+
+      if (remember) {
+        localStorage.setItem("user", JSON.stringify(data)); // adicional si marcó
+      }
+
       console.error("Error login:", error);
       showNotification('Error en el servidor', 'error');
     }

@@ -3,365 +3,263 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Midaxus - University Schedule Dashboard</title>
+  <title>Midaxus – Dashboard</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body>
 <div class="app-container">
-  <div class="navbar-top">
+
+  <!-- ══ NAVBAR ══ -->
+
+  <nav class="navbar-top">
     <div class="logo-area">
       <img src="img/midaxus_icon.png" alt="Midaxus" height="30">
       Midaxus
     </div>
-    <div class="period-selector"><i class="fas fa-calendar"></i> Midaxus 2026</div>
-    <div class="profile-badge"><span class="avatar">JD</span> <i class="fas fa-ellipsis-v" style="color:#7e9eb5;"></i></div>
-  </div>
+    <div class="nav-right">
+      <span class="role-badge" id="role-badge"></span>
+      <div class="profile-badge">
+        <span class="avatar" id="user-initials"></span>
+        <span class="user-name" id="user-name"></span>
+        <button class="btn-logout" id="btn-logout" title="Logout">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
 
   <div class="main-layout">
-    <div class="sidebar">
-      <ul>
-        <li class="active"><i class="fas fa-tachometer-alt"></i> <a href="#dashboard" style="text-decoration: none; color: inherit;">Dashboard</a></li>
-        <li><i class="fas fa-calendar-check"></i> <a href="#schedule" style="text-decoration: none; color: inherit;">Schedule</a></li>
-        <li><i class="fas fa-book"></i> <a href="#courses" style="text-decoration: none; color: inherit;">Courses</a></li>
-        <li><i class="fas fa-chalkboard-user"></i> <a href="#teachers" style="text-decoration: none; color: inherit;">Faculty</a></li>
-        <li><i class="fas fa-paper-plane"></i> <a href="#publication" style="text-decoration: none; color: inherit;">Publish</a></li>
-        <li><i class="fas fa-cog"></i> <a href="#settings" style="text-decoration: none; color: inherit;">Settings</a></li>
-      </ul>
-    </div>
 
-    <div class="content-panel">
+    <!-- ══ SIDEBAR ══ -->
+    <aside class="sidebar">
+      <ul id="sidebar-menu"></ul>
+    </aside>
 
-      <!-- Dashboard Screen -->
-      <div id="dashboard" class="screen">
+    <!-- ══ CONTENT ══ -->
+    <main class="content-panel">
+
+      <!-- ── DASHBOARD ── -->
+      <section id="screen-dashboard" class="screen">
         <h1>Dashboard</h1>
-        <div class="section-sub">Overview of your academic schedule · Midaxus 2026</div>
+        <p class="section-sub">Resumen de tu horario academico · 2026-I</p>
 
-        <div class="kpi-grid">
-          <div class="kpi-card"><span class="label">Active Courses</span><div class="value">42</div></div>
-          <div class="kpi-card"><span class="label">Scheduled Classes</span><div class="value">128</div></div>
-          <div class="kpi-card"><span class="label">Faculty Members</span><div class="value">65</div></div>
-          <div class="kpi-card"><span class="label">Classrooms</span><div class="value">28</div></div>
-        </div>
+        <div class="kpi-grid" id="kpi-grid"></div>
 
-        <div class="alert-card">
+        <div class="alert-card" id="conflict-alert" style="display:none;">
           <i class="fas fa-exclamation-triangle"></i>
-          <div style="flex:1"><strong>3 courses need attention</strong> - Scheduling conflicts detected</div>
-          <button class="btn-outline">Review</button>
+          <div style="flex:1"><strong>3 Cursos necesitan atención</strong> – Conficto de horario detectado</div>
+          <button class="btn-outline" onclick="navigateTo('schedule')">Revisar</button>
         </div>
 
-        <div style="display: flex; gap: 2rem;">
-          <div style="flex:2; background: #f0f7fa; border-radius: 8px; padding: 1.5rem; border:1px solid #d4e3f0;">
-            <h3>Upcoming Events</h3>
-            <div style="margin-top: 1rem;">
-              <div style="padding:0.8rem; border-bottom: 1px solid #e0e3e8;">📌 <strong>Schedule Publication:</strong> March 20, 2026</div>
-              <div style="padding:0.8rem; border-bottom: 1px solid #e0e3e8;">⏳ <strong>Add/Drop Period Ends:</strong> April 10, 2026</div>
-              <div style="padding:0.8rem;">📋 <strong>Final Exams:</strong> May 15 - June 5, 2026</div>
+        <div class="dash-cols">
+          <div class="dash-box">
+            <h3><i class="fas fa-calendar-day"></i> Proximos eventos</h3>
+            <div class="event-list">
+              <div class="event-item"><span class="dot"></span><div><strong>Publicacion Horarios</strong><br><small>Marzo 20, 2026</small></div></div>
+              <div class="event-item"><span class="dot"></span><div><strong>Agregar y quitar creditos</strong><br><small>Abril 10, 2026</small></div></div>
+              <div class="event-item"><span class="dot"></span><div><strong>Examen finales</strong><br><small>Mayo 15 – Junio 5, 2026</small></div></div>
             </div>
           </div>
-          <div style="flex:1; background: #e6f3fc; border-radius: 8px; padding:1.5rem; border:1px solid #d4e3f0;">
-            <i class="fas fa-tasks" style="color:#3b9a95; font-size:1.5rem;"></i>
-            <h3 style="margin-top:0.5rem;">Quick Actions</h3>
-            <button class="btn-primary" style="margin-top:1rem; width:100%;">Generate Schedule</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Schedule Screen -->
-      <div id="schedule" class="screen">
-        <h1>Weekly Schedule</h1>
-        <div class="section-sub">Manage and view class schedules · Spring 2026</div>
-
-        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
-          <button class="btn-secondary"><i class="fas fa-plus"></i> Add Class</button>
-          <button class="btn-secondary"><i class="fas fa-check-double"></i> Validate</button>
-          <button class="btn-secondary"><i class="fas fa-download"></i> Export</button>
-        </div>
-
-        <div class="week-grid">
-          <div class="grid-header">
-            <div class="header-cell"></div>
-            <div class="header-cell">Monday</div>
-            <div class="header-cell">Tuesday</div>
-            <div class="header-cell">Wednesday</div>
-            <div class="header-cell">Thursday</div>
-            <div class="header-cell">Friday</div>
-            <div class="header-cell">Saturday</div>
-          </div>
-          <div class="grid-row">
-            <div class="time-cell">08:00-09:30</div>
-            <div class="session-card">MAT101 G01 <span>Dr. Johnson</span></div>
-            <div></div>
-            <div class="session-card">PHY201 G02 <span>Dr. Smith</span></div>
-            <div></div>
-            <div></div>
-            <div></div>
-          </div>
-          <div class="grid-row">
-            <div class="time-cell">09:45-11:15</div>
-            <div></div>
-            <div class="session-card">MAT101 G02 <span>Dr. Johnson</span></div>
-            <div></div>
-            <div class="session-card">CHEM100 <span>Dr. Lewis</span></div>
-            <div></div>
-            <div></div>
-          </div>
-          <div class="grid-row">
-            <div class="time-cell">12:00-13:30</div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div></div>
-            <div class="session-card">BIO150 G01<span>Dr. Brown</span></div>
-            <div></div>
-          </div>
-          <div class="grid-row">
-            <div class="time-cell">14:00-15:30</div>
-            <div class="session-card">ENG102 G03<span>Prof. Davis</span></div>
-            <div></div>
-            <div class="session-card">HIST120 <span>Dr. Wilson</span></div>
-            <div></div>
-            <div></div>
-            <div></div>
+          <div class="dash-box" id="quick-actions-box">
+            <h3><i class="fas fa-bolt"></i> Acciones rapidas</h3>
           </div>
         </div>
 
-        <div class="inspector-panel">
-          <i class="fas fa-info-circle" style="color:#3b9a95;"></i> <strong>Selected Class:</strong> MAT101 - Calculus I (G01) | Instructor: Dr. Johnson | Room: 301
-          <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
-            <button class="btn-outline">Edit</button>
-            <button class="btn-outline">Move</button>
-            <button class="btn-outline" style="border-color: #930606; color: #930606;">Delete</button>
+        <!-- Student only -->
+        <div id="student-courses" style="display:none; margin-top:2rem;">
+          <h3 style="margin-bottom:1rem;"><i class="fas fa-book-open"></i> Cursos inscritos</h3>
+          <table class="data-table">
+            <thead><tr><th>Code</th><th>Course</th><th>Instructor</th><th>Days</th><th>Room</th></tr></thead>
+            <tbody>
+            <tr><td>MAT101</td><td>Calculus I</td><td>Dr. Johnson</td><td>Mon / Wed</td><td>301</td></tr>
+            <tr><td>PHY201</td><td>Physics II</td><td>Dr. Smith</td><td>Tue / Thu</td><td>205</td></tr>
+            <tr><td>BIO150</td><td>Biology I</td><td>Dr. Brown</td><td>Fri</td><td>108</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── SCHEDULE ── -->
+      <section id="screen-schedule" class="screen">
+        <h1>Horario semanal</h1>
+        <p class="section-sub" id="schedule-subtitle">2026</p>
+
+        <div class="schedule-toolbar" id="schedule-toolbar"></div>
+
+        <!-- Unassigned pool (Admin only) -->
+        <div id="pool-zone" style="display:none;">
+          <div class="pool-header">
+            <i class="fas fa-inbox"></i> Unscheduled
+            <span class="pool-badge" id="pool-count">0</span>
+          </div>
+          <div class="pool-slots" id="pool-slots"
+               ondragover="event.preventDefault(); this.parentElement.classList.add('drag-over')"
+               ondragleave="this.parentElement.classList.remove('drag-over')"
+               ondrop="onPoolDrop(event)">
           </div>
         </div>
-      </div>
 
-      <!-- Courses Screen -->
-      <div id="courses" class="screen">
+        <!-- Grid -->
+        <div class="week-grid-scroll">
+          <div class="week-grid">
+            <div class="grid-header">
+              <div class="hcell time-label"></div>
+              <div class="hcell">LUNES</div>
+              <div class="hcell">MARTES</div>
+              <div class="hcell">MIERCOLES</div>
+              <div class="hcell">JUEVES</div>
+              <div class="hcell">VIERNES</div>
+              <div class="hcell">SABADO</div>
+            </div>
+            <div id="grid-body"></div>
+          </div>
+        </div>
+
+        <!-- Inspector -->
+        <div class="inspector" id="inspector" style="display:none;">
+          <div id="inspector-info"></div>
+          <div id="inspector-actions" style="margin-top:.8rem; display:flex; gap:.5rem;"></div>
+        </div>
+      </section>
+
+      <!-- ── COURSES (Admin) ── -->
+      <section id="screen-courses" class="screen">
         <h1>Course Management</h1>
-        <div class="section-sub">Add and configure courses for the semester</div>
-
-        <button class="btn-primary" style="margin-bottom: 1.5rem;"><i class="fas fa-plus"></i> New Course</button>
-
-        <table class="schedule-table">
-          <thead>
-          <tr>
-            <th>Course Code</th>
-            <th>Course Name</th>
-            <th>Instructor</th>
-            <th>Enrollment</th>
-            <th>Status</th>
-          </tr>
-          </thead>
+        <p class="section-sub">Manage courses for the semester</p>
+        <button class="btn-primary" style="margin-bottom:1.5rem;"><i class="fas fa-plus"></i> New Course</button>
+        <table class="data-table">
+          <thead><tr><th>Code</th><th>Course</th><th>Instructor</th><th>Enrollment</th><th>Status</th></tr></thead>
           <tbody>
-          <tr>
-            <td>MAT101</td>
-            <td>Calculus I</td>
-            <td>Dr. Johnson</td>
-            <td>45 students</td>
-            <td><span class="badge-success">Active</span></td>
-          </tr>
-          <tr>
-            <td>PHY201</td>
-            <td>Physics II</td>
-            <td>Dr. Smith</td>
-            <td>38 students</td>
-            <td><span class="badge-success">Active</span></td>
-          </tr>
-          <tr>
-            <td>CHEM100</td>
-            <td>General Chemistry</td>
-            <td>Dr. Lewis</td>
-            <td>7 students</td>
-            <td><span class="badge-urgent">Below Min</span></td>
-          </tr>
-          <tr>
-            <td>BIO150</td>
-            <td>Biology I</td>
-            <td>Dr. Brown</td>
-            <td>42 students</td>
-            <td><span class="badge-success">Active</span></td>
-          </tr>
+          <tr><td>MAT101</td><td>Calculus I</td><td>Dr. Johnson</td><td>45</td><td><span class="badge green">Active</span></td></tr>
+          <tr><td>PHY201</td><td>Physics II</td><td>Dr. Smith</td><td>38</td><td><span class="badge green">Active</span></td></tr>
+          <tr><td>CHEM100</td><td>General Chemistry</td><td>Dr. Lewis</td><td>7</td><td><span class="badge red">Below Min</span></td></tr>
+          <tr><td>BIO150</td><td>Biology I</td><td>Dr. Brown</td><td>42</td><td><span class="badge green">Active</span></td></tr>
           </tbody>
         </table>
-
-        <div class="suggestion-box">
+        <div class="info-box warn">
           <i class="fas fa-lightbulb"></i>
-          <div>
-            <strong>Suggestion:</strong> CHEM100 has only 7 students (below minimum of 10). Consider merging with another section or canceling.
-            <div style="margin-top: 0.8rem;">
+          <div><strong>Suggestion:</strong> CHEM100 has only 7 students (below minimum of 10). Consider merging sections.
+            <div style="margin-top:.8rem; display:flex; gap:.5rem;">
               <button class="btn-primary">Merge Sections</button>
               <button class="btn-outline">Dismiss</button>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <!-- Faculty Screen -->
-      <div id="teachers" class="screen">
+      <!-- ── FACULTY (Admin) ── -->
+      <section id="screen-teachers" class="screen">
         <h1>Faculty Management</h1>
-        <div class="section-sub">Register and manage faculty members</div>
-
-        <button class="btn-primary" style="margin-bottom: 1.5rem;"><i class="fas fa-user-plus"></i> Add Faculty</button>
-
-        <div class="form-section">
-          <label class="form-label">Faculty Name</label>
-          <input class="input-field" placeholder="Full name">
-        </div>
-
-        <div class="form-section">
-          <label class="form-label">Email Address</label>
-          <input class="input-field" placeholder="faculty@university.edu">
-        </div>
-
-        <div class="form-section">
-          <label class="form-label">Employment Type</label>
-          <select class="select-field">
-            <option>Full-Time</option>
-            <option>Part-Time</option>
-            <option>Contract</option>
-            <option>Visiting</option>
+        <p class="section-sub">Register and manage faculty members</p>
+        <button class="btn-primary" style="margin-bottom:1.5rem;"><i class="fas fa-user-plus"></i> Add Faculty</button>
+        <div class="form-row"><label>Faculty Name</label><input class="field" placeholder="Full name"></div>
+        <div class="form-row"><label>Email</label><input class="field" placeholder="faculty@university.edu"></div>
+        <div class="form-row">
+          <label>Employment Type</label>
+          <select class="field">
+            <option>Full-Time</option><option>Part-Time</option><option>Contract</option><option>Visiting</option>
           </select>
         </div>
-
-        <div class="form-section">
-          <label class="form-label">Teaching Availability</label>
-          <div class="tag-group">
-            <span class="tag"><i class="fas fa-check-circle"></i> Morning Classes</span>
-            <span class="tag">Afternoon Classes</span>
-            <span class="tag">Evening Classes</span>
+        <div class="form-row">
+          <label>Courses Assigned</label>
+          <div class="tag-row">
+            <span class="tag">MAT101</span><span class="tag">PHY201</span>
+            <span class="tag tag-add"><i class="fas fa-plus-circle"></i> Add</span>
           </div>
         </div>
+        <button class="btn-primary"><i class="fas fa-save"></i> Save Faculty Member</button>
+      </section>
 
-        <div class="form-section">
-          <label class="form-label">Courses Assigned</label>
-          <div class="tag-group">
-            <span class="tag">MAT101 - Calculus</span>
-            <span class="tag">PHY201 - Physics</span>
-            <span class="tag"><i class="fas fa-plus-circle"></i> Add Course</span>
-          </div>
-        </div>
+      <!-- ── MY SCHEDULE (Teacher) ── -->
+      <section id="screen-my-schedule" class="screen">
+        <h1>My Teaching Schedule</h1>
+        <p class="section-sub">Your assigned classes for 2026-I</p>
+        <table class="data-table">
+          <thead><tr><th>Code</th><th>Course</th><th>Group</th><th>Days</th><th>Time</th><th>Room</th></tr></thead>
+          <tbody>
+          <tr><td>MAT101</td><td>Calculus I</td><td>G01</td><td>Mon / Wed</td><td>08:00–09:30</td><td>301</td></tr>
+          <tr><td>MAT101</td><td>Calculus I</td><td>G02</td><td>Tue / Thu</td><td>09:45–11:15</td><td>301</td></tr>
+          </tbody>
+        </table>
+      </section>
 
-        <button class="btn-primary" style="margin-top: 1rem;">Save Faculty Member</button>
-      </div>
+      <!-- ── AVAILABILITY (Teacher) ── -->
+      <section id="screen-availability" class="screen">
+        <h1>My Availability</h1>
+        <p class="section-sub">Click cells to mark your available hours</p>
+        <div class="avail-grid" id="avail-grid"></div>
+        <button class="btn-primary" style="margin-top:1.5rem;"><i class="fas fa-save"></i> Save Availability</button>
+      </section>
 
-      <!-- Publication Screen -->
-      <div id="publication" class="screen">
+      <!-- ── GRADES (Student) ── -->
+      <section id="screen-grades" class="screen">
+        <h1>Mis Notas </h1>
+        <p class="section-sub">RENDIMIENTO ACADEMICO · 2026-I</p>
+        <table class="data-table">
+          <thead><tr><th>Course</th><th>Partial 1</th><th>Partial 2</th><th>Final</th><th>Status</th></tr></thead>
+          <tbody>
+          <tr><td>Calculus I</td><td>3.8</td><td>4.1</td><td>–</td><td><span class="badge green">Passing</span></td></tr>
+          <tr><td>Physics II</td><td>3.2</td><td>3.5</td><td>–</td><td><span class="badge green">Passing</span></td></tr>
+          <tr><td>Biology I</td><td>4.5</td><td>–</td><td>–</td><td><span class="badge green">Passing</span></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ── PUBLISH (Admin) ── -->
+      <section id="screen-publication" class="screen">
         <h1>Publish Schedule</h1>
-        <div class="section-sub">Review and publish the official academic schedule</div>
-
-        <div class="success-box">
+        <p class="section-sub">Review and publish the official academic schedule</p>
+        <div class="info-box success">
           <i class="fas fa-check-circle"></i>
-          <div>
-            <p><strong>✓ All validations passed</strong></p>
-            <p style="margin-top: 0.5rem; font-size: 0.9rem;">No conflicts detected | All classrooms assigned | Faculty available</p>
+          <div><strong>✓ All validations passed</strong>
+            <p style="margin-top:.3rem; font-size:.88rem;">No conflicts · All classrooms assigned · Faculty available</p>
           </div>
         </div>
-
-        <div style="background: #f0f7fa; border-radius: 8px; padding: 1.5rem; border: 1px solid #d4e3f0; margin: 1.5rem 0;">
-          <h3>Publication Details</h3>
-          <div style="margin-top: 1rem;">
-            <div style="padding: 0.8rem 0; border-bottom: 1px solid #e0e3e8;">
-              <strong>Semester:</strong> Spring 2026
-            </div>
-            <div style="padding: 0.8rem 0; border-bottom: 1px solid #e0e3e8;">
-              <strong>Total Courses:</strong> 42
-            </div>
-            <div style="padding: 0.8rem 0; border-bottom: 1px solid #e0e3e8;">
-              <strong>Total Classes:</strong> 128
-            </div>
-            <div style="padding: 0.8rem 0;">
-              <strong>Publication Date:</strong> March 20, 2026
-            </div>
-          </div>
+        <div class="details-block">
+          <div class="detail-row"><span>Semester</span><strong>Spring 2026</strong></div>
+          <div class="detail-row"><span>Total Courses</span><strong>42</strong></div>
+          <div class="detail-row"><span>Total Classes</span><strong>128</strong></div>
+          <div class="detail-row"><span>Publication Date</span><strong>March 20, 2026</strong></div>
         </div>
-
-        <div style="background: #fff9e6; border-radius: 8px; padding: 1.5rem; border: 1px solid #f0e9d8; margin: 1.5rem 0; border-left: 4px solid #ff9800;">
-          <i class="fas fa-bell" style="color: #ff9800;"></i> <strong>Notification:</strong> Faculty and students will be notified via email upon publication.
+        <div class="info-box warn" style="margin-bottom:1.5rem;">
+          <i class="fas fa-bell"></i> Faculty and students will be notified via email upon publication.
         </div>
+        <button class="btn-primary"><i class="fas fa-paper-plane"></i> Publish Schedule</button>
+      </section>
 
-        <button class="btn-primary" style="font-size: 1.05rem; padding: 0.9rem 2.5rem;"><i class="fas fa-paper-plane"></i> Publish Schedule</button>
-
-        <div style="margin-top: 2rem;">
-          <h3>Version History</h3>
-          <table class="schedule-table">
-            <thead>
-            <tr>
-              <th>Date</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-              <td>March 15, 2026</td>
-              <td><span class="badge-success">Published</span></td>
-              <td><a href="#" style="color: #3b9a95; text-decoration: none;">Download</a></td>
-            </tr>
-            <tr>
-              <td>March 10, 2026</td>
-              <td>Draft</td>
-              <td><a href="#" style="color: #3b9a95; text-decoration: none;">View</a></td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Settings Screen -->
-      <div id="settings" class="screen">
+      <!-- ── SETTINGS (Admin) ── -->
+      <section id="screen-settings" class="screen">
         <h1>Settings</h1>
-        <div class="section-sub">Configure system parameters and constraints</div>
-
-        <div class="form-section">
-          <label class="form-label">Class Hours</label>
-          <div class="flex-row">
-            <input class="input-field" style="max-width: 120px;" value="08:00" placeholder="Start time">
+        <p class="section-sub">Configure system parameters and constraints</p>
+        <div class="form-row">
+          <label>Class Hours</label>
+          <div style="display:flex; gap:.8rem; align-items:center;">
+            <input class="field" style="max-width:110px;" value="08:00">
             <span>to</span>
-            <input class="input-field" style="max-width: 120px;" value="18:00" placeholder="End time">
+            <input class="field" style="max-width:110px;" value="18:00">
           </div>
         </div>
-
-        <div class="form-section">
-          <label class="form-label">Lunch Break (No Classes)</label>
-          <div class="flex-row">
-            <input class="input-field" style="max-width: 100px;" value="12:00" placeholder="Start">
+        <div class="form-row">
+          <label>Lunch Break</label>
+          <div style="display:flex; gap:.8rem; align-items:center;">
+            <input class="field" style="max-width:110px;" value="12:00">
             <span>to</span>
-            <input class="input-field" style="max-width: 100px;" value="13:30" placeholder="End">
-            <i class="fas fa-lock" style="color: #3b9a95;"></i>
+            <input class="field" style="max-width:110px;" value="13:30">
           </div>
         </div>
-
-        <div class="form-section">
-          <label class="form-label">Standard Classroom Capacity</label>
-          <input class="input-field" style="max-width: 120px;" value="40" placeholder="Capacity">
-          <span style="margin-left: 1rem;">Tolerance: <input class="input-field" style="width: 70px; max-width: 70px;" value="10"> %</span>
-        </div>
-
-        <div class="form-section">
-          <label class="form-label">Maximum Classes per Week</label>
-          <input class="input-field" style="max-width: 80px;" value="4" placeholder="Max classes">
-          <div class="tag-group">
-            <span class="tag"><i class="fas fa-square"></i> Avoid consecutive days (preferred)</span>
-          </div>
-        </div>
-
-        <div class="form-section">
-          <label class="form-label">Minimum Students per Course</label>
-          <input class="input-field" style="max-width: 100px;" value="10" placeholder="Minimum">
-        </div>
-
+        <div class="form-row"><label>Min. Students / Course</label><input class="field" style="max-width:100px;" value="10"></div>
+        <div class="form-row"><label>Classroom Capacity</label><input class="field" style="max-width:100px;" value="40"></div>
         <button class="btn-primary"><i class="fas fa-save"></i> Save Settings</button>
-      </div>
+      </section>
 
-    </div>
+    </main>
   </div>
 </div>
 
-<div style="max-width: 1440px; margin: 1rem auto 0; padding-left: 1.5rem; font-size: 0.85rem; color: #666;">
-  Click on menu items to navigate between sections. Midaxus - Smart Scheduling for Universities
-</div>
+<div id="toast-root"></div>
 
 <script src="js/dashboard.js"></script>
+
 </body>
 </html>
