@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+
+
+  mysql:
+    image: mysql:8.4
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: midaxus_db
+      MYSQL_USER: midaxus
+      MYSQL_PASSWORD: midaxus_pass
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$MYSQL_ROOT_PASSWORD --silent" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  app:
+    build: .
+    container_name: midaxus_app
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8088:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/midaxus_db
+      SPRING_DATASOURCE_USERNAME: midaxus
+      SPRING_DATASOURCE_PASSWORD: midaxus_pass
+      MAIL_USER: ${MAIL_USER}
+      MAIL_PASS: ${MAIL_PASS}
+
+volumes:
+  mysql_data:

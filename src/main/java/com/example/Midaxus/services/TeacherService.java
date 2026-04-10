@@ -7,7 +7,6 @@ import com.example.Midaxus.repositories.TeacherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
 import java.util.List;
 
 @Service
@@ -16,22 +15,30 @@ public class TeacherService implements ITeacher<TeacherDTO, String> {
     @Autowired
     private TeacherRepository teacherRepository;
 
-
-
     @Override
-    public void deleteTeacher(String teacherId) {
-      teacherRepository.deleteById(teacherId);
+    public TeacherDTO createTeacher(TeacherDTO teacherDTO) {
+        Teacher teacher = TeacherMapper.toEntity(teacherDTO);
+        Teacher saved = teacherRepository.save(teacher);
+        return TeacherMapper.toDTO(saved);
     }
 
     @Override
-    public TeacherDTO getTeacher(String s) {
-        Teacher teacher = teacherRepository.findById(s)
+    public void deleteTeacher(String teacherId) {
+        teacherRepository.deleteById(teacherId);
+    }
+
+    @Override
+    public TeacherDTO getTeacher(String teacherId) {
+        Teacher teacher = teacherRepository.findById(teacherId)
                 .orElseThrow(() -> new RuntimeException("Teacher not found"));
-      return TeacherMapper.toDTO(teacher);
+        return TeacherMapper.toDTO(teacher);
     }
 
     @Override
     public List<TeacherDTO> getTeachers() {
-        return teacherRepository.findAll().stream().map(TeacherMapper::toDTO).toList();
+        return teacherRepository.findAll()
+                .stream()
+                .map(TeacherMapper::toDTO)
+                .toList();
     }
 }
