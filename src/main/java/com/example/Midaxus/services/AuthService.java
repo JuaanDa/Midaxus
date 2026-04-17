@@ -10,6 +10,7 @@ import com.example.Midaxus.model.mapper.AdminMapper;
 import com.example.Midaxus.model.mapper.StudentMapper;
 import com.example.Midaxus.model.mapper.TeacherMapper;
 import com.example.Midaxus.repositories.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,10 +18,12 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final EmailService emailService;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthService(UserRepository userRepository, EmailService emailService) {
+    public AuthService(UserRepository userRepository, EmailService emailService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.emailService = emailService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     // -----------------------
@@ -34,7 +37,7 @@ public class AuthService {
             return new LoginResponseDTO(false, "El correo no está registrado", null, null);
         }
 
-        if (!user.getPassword().equals(login.getPassword())) {
+        if (!passwordEncoder.matches(login.getPassword(), user.getPassword())) {
             return new LoginResponseDTO(false, "Contraseña incorrecta", null, null);
         }
 

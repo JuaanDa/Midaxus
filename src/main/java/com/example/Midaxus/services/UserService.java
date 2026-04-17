@@ -8,6 +8,7 @@ import com.example.Midaxus.model.entities.User;
 import com.example.Midaxus.model.mapper.TeacherMapper;
 import com.example.Midaxus.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,6 +17,9 @@ public class UserService implements IUser<UserDTO, String> {
 
         @Autowired
         private UserRepository userRepository;
+
+        @Autowired
+        private PasswordEncoder passwordEncoder;
 
 
     @Override
@@ -30,8 +34,9 @@ public class UserService implements IUser<UserDTO, String> {
                 teacher.setFirstName(dto.getFirstName());
                 teacher.setLastName(dto.getLastName());
                 teacher.setEmail(dto.getEmail());
-                teacher.setPassword(dto.getPassword());
-
+                teacher.setPassword(passwordEncoder.encode(dto.getPassword()));
+                System.out.println("PASSWORD RAW: " + dto.getPassword());
+                System.out.println("PASSWORD ENCODED: " + passwordEncoder.encode(dto.getPassword()));
 
                 Teacher savedTeacher = userRepository.save(teacher);
                 return new UserDTO(
@@ -54,7 +59,7 @@ public class UserService implements IUser<UserDTO, String> {
                 student.setFirstName(dto.getFirstName());
                 student.setLastName(dto.getLastName());
                 student.setEmail(dto.getEmail());
-                student.setPassword(dto.getPassword());
+                student.setPassword(passwordEncoder.encode(dto.getPassword()));
 
                 Student savedStudent = userRepository.save(student);
                 return new UserDTO(
@@ -72,8 +77,10 @@ public class UserService implements IUser<UserDTO, String> {
             case "ADMIN":
                 Admin admin = new Admin();
                 admin.setUserName(dto.getUserName());
+                admin.setFirstName(dto.getFirstName());
+                admin.setLastName(dto.getLastName());
                 admin.setEmail(dto.getEmail());
-                admin.setPassword(dto.getPassword());
+                admin.setPassword(passwordEncoder.encode(dto.getPassword()));
 
                 Admin savedAdmin = userRepository.save(admin);
                 return new UserDTO(

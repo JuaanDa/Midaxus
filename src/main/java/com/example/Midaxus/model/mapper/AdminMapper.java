@@ -15,9 +15,12 @@ public class AdminMapper {
         if (admin == null) return null;
 
         return new AdminDTO(admin.getAdminId(),
+                            admin.getFirstName(),
+                            admin.getLastName(),
                             admin.getUserName(),
                             admin.getEmail());
     }
+
 
     public static List<AdminDTO> toDTOlist(List<Admin>admins){
 

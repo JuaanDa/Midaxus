@@ -5,12 +5,17 @@ public class AdminDTO {
     private String adminId;
     private String userName;
     private String email;
+    private String firstName;
+    private String lastName;
+    private String password;
 
     public AdminDTO() {}
 
-    public AdminDTO(String adminId, String userName, String email) {
+    public AdminDTO(String adminId, String firstName, String lastName,  String userName, String email) {
 
         this.adminId = adminId;
+        this.firstName = firstName;
+        this.lastName = lastName;
         this.userName = userName;
         this.email = email;
     }
@@ -33,6 +38,30 @@ public class AdminDTO {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public void setEmail(String email) {
