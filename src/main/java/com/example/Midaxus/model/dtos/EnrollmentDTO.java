@@ -7,18 +7,22 @@ import com.example.Midaxus.model.enums.EnrollmentStatus;
 public class EnrollmentDTO {
 
     private String enrollmentId;
-    private Student student;
-    private CourseGroup courseGroup;
+    private String studentId;
+    private String courseGroupId;
     private EnrollmentStatus status;
 
-    public EnrollmentDTO(String enrollmentId, Student student, CourseGroup courseGroup, EnrollmentStatus status) {
-        this.enrollmentId = enrollmentId;
-        this.student = student;
-        this.courseGroup = courseGroup;
-        this.status = status;
-    }
+    public EnrollmentDTO() {}
 
-    public EnrollmentDTO(){};
+    public EnrollmentDTO(String enrollmentId, String studentId,
+                         String courseGroupId, EnrollmentStatus status) {
+        this.enrollmentId = enrollmentId;
+        this.studentId = studentId;
+        this.courseGroupId = courseGroupId;
+        this.status = status;
+
+
+    // getters & setters
+}
 
     public String getEnrollmentId() {
         return enrollmentId;
@@ -28,20 +32,20 @@ public class EnrollmentDTO {
         this.enrollmentId = enrollmentId;
     }
 
-    public Student getStudent() {
-        return student;
+    public String getStudentId() {
+        return studentId;
     }
 
-    public void setStudent(Student student) {
-        this.student = student;
+    public void setStudentId(String studentId) {
+        this.studentId = studentId;
     }
 
-    public CourseGroup getCourseGroup() {
-        return courseGroup;
+    public String getCourseGroupId() {
+        return courseGroupId;
     }
 
-    public void setCourseGroup(CourseGroup courseGroup) {
-        this.courseGroup = courseGroup;
+    public void setCourseGroupId(String courseGroupId) {
+        this.courseGroupId = courseGroupId;
     }
 
     public EnrollmentStatus getStatus() {

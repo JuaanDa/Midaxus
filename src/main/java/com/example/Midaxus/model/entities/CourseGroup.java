@@ -42,7 +42,6 @@ public class CourseGroup {
         this.academicPeriod = academicPeriod;
         this.capacity = capacity;
         this.enrollments = enrollments;
-        this.enrollments = enrollments1;
     }
 
     public String getCourseGroupId() {

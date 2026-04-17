@@ -29,8 +29,8 @@ public class TeacherService implements ITeacher<TeacherDTO, String> {
 
     @Override
     public TeacherDTO getTeacher(String teacherId) {
-        Teacher teacher = teacherRepository.findById(teacherId)
-                .orElseThrow(() -> new RuntimeException("Teacher not found"));
+        Teacher teacher = teacherRepository.findByTeacherCode(teacherId)
+                .orElseThrow(() -> new RuntimeException("Teacher no encontrado"));
         return TeacherMapper.toDTO(teacher);
     }
 

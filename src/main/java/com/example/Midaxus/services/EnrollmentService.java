@@ -13,39 +13,48 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 @Service
 public class EnrollmentService implements IEnrollment<EnrollmentDTO, String> {
 
     @Autowired
-    EnrollmentRepository enrollmentRepository;
-    @Autowired
-    StudentRepository studentRepository;
-    @Autowired
-    CourseGroupRepository courseGroupRepository;
+    private EnrollmentRepository enrollmentRepository;
 
+    @Autowired
+    private StudentRepository studentRepository;
+
+    @Autowired
+    private CourseGroupRepository courseGroupRepository;
 
     @Override
     public EnrollmentDTO createEnrollment(EnrollmentDTO dto) {
 
         if (dto == null) throw new RuntimeException("Datos inválidos");
 
-        Student student = studentRepository.findById(dto.getStudent().getId())
+        // buscar entidades por ID
+        Student student = studentRepository.findById(dto.getStudentId())
                 .orElseThrow(() -> new RuntimeException("Student no encontrado"));
 
-        CourseGroup courseGroup = courseGroupRepository.findById(dto.getCourseGroup().getCourseGroupId())
+        CourseGroup courseGroup = courseGroupRepository.findById(dto.getCourseGroupId())
                 .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
 
-        // 🔥 duplicado
+        //  evitar duplicado
         if (enrollmentRepository.existsByStudentAndCourseGroup(student, courseGroup)) {
             throw new RuntimeException("Ya estás inscrito en este curso");
         }
 
-        // 🔥 capacidad
-        if (courseGroup.getEnrollments().size() >= courseGroup.getCapacity()) {
-            throw new RuntimeException("Curso lleno");
+        //  capacidad (RF-07 con tolerancia 10%)
+        int current = enrollmentRepository.getAllByCourseGroup(courseGroup).size();
+        int capacity = courseGroup.getCapacity();
+        int maxAllowed = (int) (capacity * 1.1);
+
+        if (current >= maxAllowed) {
+            throw new RuntimeException("Curso lleno (aforo máximo alcanzado)");
         }
 
-        Enrollment enrollment = new Enrollment();
+        //  crear enrollment
+        Enrollment enrollment = EnrollmentMapper.toEntity(dto);
+
         enrollment.setStudent(student);
         enrollment.setCourseGroup(courseGroup);
         enrollment.setStatus(EnrollmentStatus.ENROLLED);
@@ -56,16 +65,18 @@ public class EnrollmentService implements IEnrollment<EnrollmentDTO, String> {
     }
 
     @Override
-    public EnrollmentDTO getEnrollment(String s) {
-        Enrollment e = enrollmentRepository.findById(s)
+    public EnrollmentDTO getEnrollment(String id) {
+        Enrollment e = enrollmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("No encontrado"));
-        return EnrollmentMapper.toDTO(e);
 
+        return EnrollmentMapper.toDTO(e);
     }
 
     @Override
     public List<EnrollmentDTO> getAll() {
-        return EnrollmentMapper.all(enrollmentRepository.findAllByStatus(EnrollmentStatus.ENROLLED));
+        return EnrollmentMapper.toDTOList(
+                enrollmentRepository.findAllByStatus(EnrollmentStatus.ENROLLED)
+        );
     }
 
     @Override
