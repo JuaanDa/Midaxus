@@ -46,7 +46,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
-    const remember = document.getElementById('remember').checked;
+    const rememberEl = document.getElementById('remember');
+    const remember = rememberEl ? rememberEl.checked : false;
 
     if (!email || !password) {
       showNotification('Por favor complete todos los campos', 'error');

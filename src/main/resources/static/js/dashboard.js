@@ -6,24 +6,27 @@
 const ROLES = {
   ADMIN: {
     badge: "ADMIN",
+    roleTitle: "Administrador General",
+    icon: "🛡️",
+    theme: "from-red-600 to-red-700",
     menu: [
       { id:"dashboard",   icon:"fas fa-tachometer-alt",  label:"Dashboard"   },
       { id:"schedule",    icon:"fas fa-calendar-check",  label:"Schedule"    },
-      { id:"courses",     icon:"fas fa-book",            label:"Courses"     },
-      { id:"teachers",    icon:"fas fa-chalkboard-user", label:"Faculty"     },
+      { id:"courses",     icon:"fas fa-book",            label:"Gestión de Salones y Clases", desc:"Admin de Salones y Clases", emoji:"🏫" },
+      { id:"teachers",    icon:"fas fa-chalkboard-user", label:"Gestión de Usuarios", desc:"Administrar estudiantes y profesores", emoji:"👥" },
       { id:"publication", icon:"fas fa-paper-plane",     label:"Publish"     },
       { id:"settings",    icon:"fas fa-cog",             label:"Settings"    }
     ],
     kpis: [
-      { label:"Active Courses",    value:"42",  icon:"fas fa-book"      },
-      { label:"Scheduled Classes", value:"128", icon:"fas fa-calendar"  },
-      { label:"Faculty Members",   value:"65",  icon:"fas fa-users"     },
-      { label:"Classrooms",        value:"28",  icon:"fas fa-door-open" }
+      { label:"Estudiantes Activos", value:"1,245", icon:"🎓", bg:"bg-blue-100" },
+      { label:"Profesores",          value:"87",    icon:"👨‍🏫", bg:"bg-indigo-100" },
+      { label:"Materias",            value:"156",   icon:"📄", bg:"bg-green-100" },
+      { label:"Aulas",               value:"42",    icon:"🏫", bg:"bg-orange-100" }
     ],
     quickActions: [
-      { label:"Generate Schedule", icon:"fas fa-magic",        fn: ()=>toast("Schedule generation started…","info")    },
-      { label:"Validate All",      icon:"fas fa-check-double", fn: ()=>toast("All schedules validated ✓","success")    },
-      { label:"Export PDF",        icon:"fas fa-file-pdf",     fn: ()=>toast("Exporting PDF…","info")                  }
+      { label:"Gestión de Usuarios", desc:"Administrar estudiantes y profesores", emoji:"👥", fn: ()=>navigateTo("teachers") },
+      { label:"Gestión de Sesiones", desc:"Admin de Salones y Clases", emoji:"🏫", fn: ()=>navigateTo("courses") },
+      { label:"Generar Horario", desc:"Automático", emoji:"✨", fn: ()=>toast("Schedule generation started…","info") }
     ],
     showConflictAlert: true,
     scheduleEditable: true
@@ -31,6 +34,9 @@ const ROLES = {
 
   TEACHER: {
     badge: "TEACHER",
+    roleTitle: "Profesor",
+    icon: "👨‍🏫",
+    theme: "from-indigo-600 to-indigo-700",
     menu: [
       { id:"dashboard",    icon:"fas fa-tachometer-alt", label:"Dashboard"     },
       { id:"schedule",     icon:"fas fa-calendar-check", label:"Full Schedule" },
@@ -40,12 +46,13 @@ const ROLES = {
     kpis: [
       { label:"My Courses",   value:"2",   icon:"fas fa-book"         },
       { label:"Weekly Hours", value:"12",  icon:"fas fa-clock"        },
-      { label:"My Groups",    value:"2",   icon:"fas fa-users"        },
-      { label:"Next Class",   value:"Mon", icon:"fas fa-calendar-day" }
+      { label:"My Groups",    value:"2",   icon:"fas fa-users"        }
     ],
     quickActions: [
-      { label:"My Schedule",     icon:"fas fa-calendar", fn: ()=>navigateTo("my-schedule")  },
-      { label:"Set Availability", icon:"fas fa-clock",   fn: ()=>navigateTo("availability") }
+      { label:"Registrar Asistencia", desc:"Gestionar asistencias", emoji:"✏️", fn: ()=>toast("Módulo en construcción", "info") },
+      { label:"Calificar", desc:"Ingresar notas", emoji:"📊", fn: ()=>navigateTo("grades") },
+      { label:"Material Didáctico", desc:"Subir recursos", emoji:"📚", fn: ()=>toast("Módulo en construcción", "info") },
+      { label:"Configuración", desc:"Ajustes de perfil", emoji:"⚙️", fn: ()=>toast("Módulo en construcción", "info") }
     ],
     showConflictAlert: false,
     scheduleEditable: false
@@ -53,19 +60,19 @@ const ROLES = {
 
   STUDENT: {
     badge: "STUDENT",
+    roleTitle: "Estudiante",
+    icon: "🎓",
+    theme: "from-blue-600 to-blue-700",
     menu: [
       { id:"dashboard", icon:"fas fa-tachometer-alt", label:"Dashboard" },
       { id:"schedule",  icon:"fas fa-calendar-check", label:"Schedule"  },
       { id:"grades",    icon:"fas fa-star-half-alt",  label:"My Grades" }
     ],
-    kpis: [
-      { label:"Enrolled",     value:"3",   icon:"fas fa-book"           },
-      { label:"Classes/Week", value:"8",   icon:"fas fa-calendar"       },
-      { label:"Credits",      value:"12",  icon:"fas fa-graduation-cap" },
-      { label:"GPA",          value:"3.9", icon:"fas fa-chart-line"     }
-    ],
+    kpis: [],
     quickActions: [
-      { label:"My Grades", icon:"fas fa-star", fn: ()=>navigateTo("grades") }
+      { label:"Ver Calificaciones", desc:"Consulta tus notas", emoji:"📄", fn: ()=>navigateTo("grades") },
+      { label:"Calendario Académico", desc:"Fechas importantes", emoji:"📅", fn: ()=>navigateTo("schedule") },
+      { label:"Notificaciones", desc:"Avisos y mensajes", emoji:"🔔", fn: ()=>toast("No tienes notificaciones", "info") }
     ],
     showConflictAlert: false,
     scheduleEditable: false,
@@ -128,12 +135,17 @@ if (!cfg) {
   console.error("Rol no reconocido:", session.role);
   window.location.href = "/login";
 }
-  // Navbar
-  document.getElementById("user-initials").textContent = session.initials || session.role[0];
-  document.getElementById("user-name").textContent     = session.name || session.email;
-  const rb = document.getElementById("role-badge");
-  rb.textContent = cfg.badge;
-  rb.className   = "role-badge " + cfg.badge;
+  // Llenar el perfil en el Banner y Header
+  document.getElementById("user-name").textContent = session.name || session.email;
+  
+  const roleSubtitle = document.getElementById("role-subtitle");
+  if(roleSubtitle) roleSubtitle.textContent = cfg.roleTitle || cfg.badge;
+  
+  const profileIcon = document.getElementById("profile-icon");
+  if(profileIcon) profileIcon.textContent = cfg.icon || "👤";
+  
+  const banner = document.getElementById("profile-banner");
+  if(banner) banner.className = `text-white rounded-lg shadow-md p-6 mb-6 bg-gradient-to-r ${cfg.theme || 'from-gray-600 to-gray-700'}`;
 
   document.getElementById("btn-logout").addEventListener("click", () => {
     if (typeof clearSession === "function") clearSession();
@@ -141,12 +153,9 @@ if (!cfg) {
     window.location.href = "/login";
   });
 
-  buildSidebar(cfg.menu);
+  buildSidebar(cfg.menu); // Mantenido para compatibilidad o sub-navegación si aplica
   buildKPIs(cfg.kpis);
   buildQuickActions(cfg.quickActions);
-
-  const ca = document.getElementById("conflict-alert");
-  if (ca) ca.style.display = cfg.showConflictAlert ? "flex" : "none";
 
   const sc = document.getElementById("student-courses");
   if (sc) sc.style.display = cfg.showStudentCourses ? "block" : "none";
@@ -356,39 +365,48 @@ window.navigateTo = navigateTo;
 
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
 function buildSidebar(menu) {
-  const ul = document.getElementById("sidebar-menu");
-  ul.innerHTML = "";
-  menu.forEach(item => {
-    const li = document.createElement("li");
-    li.dataset.id = item.id;
-    li.innerHTML  = `<i class="${item.icon}"></i><span>${item.label}</span>`;
-    li.addEventListener("click", () => navigateTo(item.id));
-    ul.appendChild(li);
-  });
+  // Sidebar removida en favor del diseño de Tailwind (Header + Quick Actions Grid)
 }
 
 // ─── KPIs ─────────────────────────────────────────────────────────────────────
 function buildKPIs(kpis) {
   const g = document.getElementById("kpi-grid");
   if (!g) return;
-  const cols = kpis.length <= 2 ? 2 : kpis.length === 3 ? 3 : 4;
-  g.style.gridTemplateColumns = `repeat(${cols},1fr)`;
-  g.innerHTML = kpis.map(k=>`
-    <div class="kpi-card">
-      <span class="label"><i class="${k.icon}" style="margin-right:.3rem;color:var(--teal);"></i>${k.label}</span>
-      <div class="value">${k.value}</div>
+  
+  if (!kpis || kpis.length === 0) {
+    g.style.display = 'none';
+    return;
+  }
+  
+  g.style.display = 'grid';
+  g.innerHTML = kpis.map(k => `
+    <div class="bg-white rounded-xl shadow-md p-6 flex items-center gap-4 transition-transform hover:-translate-y-1">
+      <div class="${k.bg || 'bg-blue-100 text-blue-600'} p-4 rounded-full w-14 h-14 flex items-center justify-center text-2xl">
+        ${k.icon}
+      </div>
+      <div>
+        <p class="text-gray-500 text-sm font-medium">${k.label}</p>
+        <p class="text-2xl font-bold text-gray-800">${k.value}</p>
+      </div>
     </div>`).join("");
 }
 
-// ─── Quick Actions ────────────────────────────────────────────────────────────
+// ─── Quick Actions / Opciones Principales ─────────────────────────────────────
 function buildQuickActions(actions) {
   const box = document.getElementById("quick-actions-box");
   if (!box) return;
-  box.innerHTML = `<h3><i class="fas fa-bolt"></i> Quick Actions</h3>`;
+  box.innerHTML = "";
+  
   actions.forEach(a => {
     const btn = document.createElement("button");
-    btn.className = "btn-primary";
-    btn.innerHTML = `<i class="${a.icon}"></i> ${a.label}`;
+    btn.className = "bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl p-4 text-left transition-colors group";
+    btn.innerHTML = `
+      <div class="flex items-center gap-3 mb-2">
+        <span class="text-2xl">${a.emoji || '⚡'}</span>
+        <h4 class="font-bold text-gray-800 group-hover:text-blue-600 transition-colors">${a.label}</h4>
+      </div>
+      <p class="text-sm text-gray-500">${a.desc || ''}</p>
+    `;
     btn.addEventListener("click", a.fn);
     box.appendChild(btn);
   });
