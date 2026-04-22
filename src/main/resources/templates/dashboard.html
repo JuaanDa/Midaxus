@@ -146,6 +146,66 @@
         </div>
       </section>
 
+      <!-- ── SUBJECTS (Materias) (Admin) ── -->
+      <section id="screen-subjects" class="screen">
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <div class="flex justify-between items-center mb-6">
+            <div>
+              <h1 class="text-2xl font-bold text-gray-800">Catálogo de Materias</h1>
+              <p class="text-gray-600">Administra las materias que la institución imparte</p>
+            </div>
+            <button class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg flex items-center gap-2 transition-colors" onclick="openCreateSubjectModal()"><i class="fas fa-plus"></i> Nueva Materia</button>
+          </div>
+          
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-indigo-50 text-indigo-800">
+                  <th class="p-3 border-b border-indigo-100">Código</th>
+                  <th class="p-3 border-b border-indigo-100">Nombre de la Materia</th>
+                  <th class="p-3 border-b border-indigo-100">Sesiones / Semana</th>
+                  <th class="p-3 border-b border-indigo-100">Duración (Mins)</th>
+                </tr>
+              </thead>
+              <tbody id="admin-subjects-table-body" class="divide-y divide-gray-100">
+                <!-- Dinámico -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <!-- Modal Crear Materia -->
+        <div id="modal-create-subject" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+          <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Nueva Materia</h2>
+            
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Código (ID)</label>
+              <input type="text" id="create-subject-id" placeholder="Ej. SIS-101" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 outline-none uppercase">
+            </div>
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+              <input type="text" id="create-subject-name" placeholder="Ej. Cálculo I" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 outline-none">
+            </div>
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Sesiones por semana</label>
+              <input type="number" id="create-subject-sessions" min="1" max="4" value="2" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 outline-none">
+              <p class="text-xs text-gray-500 mt-1">Debe ser entre 1 y 4 sesiones.</p>
+            </div>
+            <div class="mb-6">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Duración por sesión (Minutos)</label>
+              <input type="number" value="120" disabled class="w-full border border-gray-200 bg-gray-100 text-gray-500 rounded-lg p-2 outline-none">
+              <p class="text-xs text-gray-500 mt-1">Requerido por motor de horarios: 120 min.</p>
+            </div>
+            
+            <div class="flex justify-end gap-3">
+              <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors" onclick="closeCreateSubjectModal()">Cancelar</button>
+              <button class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition-colors" onclick="createSubject()">Crear Materia</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- ── SCHEDULE ── -->
       <section id="screen-schedule" class="screen">
         <div class="bg-white rounded-lg shadow-md p-6 overflow-x-auto">
@@ -203,6 +263,83 @@
         <div class="bg-white rounded-lg shadow-md p-6">
           <h1 class="text-2xl font-bold text-gray-800 mb-6">Gestión de Profesores</h1>
           <div class="text-center text-gray-500 py-10">Módulo en construcción</div>
+        </div>
+      </section>
+
+      <!-- ── SETTINGS (Admin) ── -->
+      <section id="screen-settings" class="screen">
+        <div class="bg-white rounded-lg shadow-md p-6 max-w-2xl mx-auto">
+          <div class="mb-6 pb-4 border-b border-gray-200">
+            <h1 class="text-2xl font-bold text-gray-800">Configuración Institucional</h1>
+            <p class="text-gray-600">Configura las franjas horarias y políticas operativas del sistema</p>
+          </div>
+          
+          <div class="space-y-6">
+            <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-6">
+              <h3 class="font-bold text-blue-800 flex items-center gap-2 mb-2"><i class="fas fa-clock"></i> Límites de Jornada</h3>
+              <p class="text-sm text-blue-600">Define a qué hora inician y terminan las clases en la institución.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Hora Inicio de Jornada</label>
+                <input type="time" id="policy-class-start" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 outline-none">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Hora Fin de Jornada</label>
+                <input type="time" id="policy-class-end" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 outline-none">
+              </div>
+            </div>
+
+            <div class="bg-orange-50 p-4 rounded-lg border border-orange-100 my-6">
+              <h3 class="font-bold text-orange-800 flex items-center gap-2 mb-2"><i class="fas fa-utensils"></i> Bloque de Almuerzo</h3>
+              <p class="text-sm text-orange-600">Define el horario en el que no se podrán programar clases.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Inicio Almuerzo</label>
+                <input type="time" id="policy-lunch-start" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 outline-none">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Fin Almuerzo</label>
+                <input type="time" id="policy-lunch-end" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 outline-none">
+              </div>
+            </div>
+
+            <div class="bg-indigo-50 p-4 rounded-lg border border-indigo-100 my-6">
+              <h3 class="font-bold text-indigo-800 flex items-center gap-2 mb-2"><i class="fas fa-users"></i> Control de Aforo y Matrículas</h3>
+              <p class="text-sm text-indigo-600">Configura el estándar de estudiantes por sesión y el porcentaje máximo de tolerancia permitido.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Aforo Estándar (por defecto)</label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-user-graduate text-gray-400"></i>
+                  </div>
+                  <input type="number" id="policy-standard-capacity" min="1" max="200" class="w-full border border-gray-300 rounded-lg py-2 pl-10 pr-3 focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Ej: 40">
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Tolerancia Máxima</label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-percent text-gray-400"></i>
+                  </div>
+                  <input type="number" id="policy-capacity-tolerance" min="0" max="100" class="w-full border border-gray-300 rounded-lg py-2 pl-10 pr-3 focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Ej: 10">
+                </div>
+                <p class="text-xs text-gray-500 mt-1">El aforo máximo será el estándar + este porcentaje.</p>
+              </div>
+            </div>
+
+            <div class="mt-8 flex justify-end gap-3 pt-4 border-t border-gray-200">
+              <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg flex items-center gap-2 transition-colors" onclick="saveInstitutionPolicies()">
+                <i class="fas fa-save"></i> Guardar Políticas
+              </button>
+            </div>
+          </div>
         </div>
       </section>
 

@@ -25,8 +25,10 @@ const ROLES = {
     ],
     quickActions: [
       { label:"Gestión de Usuarios", desc:"Administrar estudiantes y profesores", emoji:"👥", fn: ()=>navigateTo("teachers") },
+      { label:"Gestión de Materias", desc:"Catálogo de materias", emoji:"📚", fn: ()=>navigateTo("subjects") },
       { label:"Gestión de Sesiones", desc:"Admin de Salones y Clases", emoji:"🏫", fn: ()=>navigateTo("courses") },
-      { label:"Generar Horario", desc:"Automático", emoji:"✨", fn: ()=>toast("Schedule generation started…","info") }
+      { label:"Generar Horario", desc:"Automático", emoji:"✨", fn: ()=>toast("Schedule generation started…","info") },
+      { label:"Configuración", desc:"Límites de Jornada y Almuerzo", emoji:"⚙️", fn: ()=>navigateTo("settings") }
     ],
     showConflictAlert: true,
     scheduleEditable: true
@@ -190,11 +192,159 @@ function navigateTo(id) {
     loadAdminCourses();
   }
   
+  if (id === "subjects" && session.role === "ADMIN") {
+    loadAdminSubjects();
+  }
+  
+  if (id === "settings" && session.role === "ADMIN") {
+    loadInstitutionPolicies();
+  }
+  
   if (id === "dashboard" && session.role === "STUDENT") {
     loadStudentCourses();
   }
   
   window.scrollTo(0,0);
+}
+
+// ─── Institution Policies (HU-5) ──────────────────────────────────────────────
+async function loadInstitutionPolicies() {
+  try {
+    const res = await fetch('/api/policies', {
+      headers: { 'Authorization': 'Bearer ' + rawAuth?.token }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if(data.classStartTime) document.getElementById('policy-class-start').value = data.classStartTime.substring(0,5);
+      if(data.classEndTime) document.getElementById('policy-class-end').value = data.classEndTime.substring(0,5);
+      if(data.lunchStartTime) document.getElementById('policy-lunch-start').value = data.lunchStartTime.substring(0,5);
+      if(data.lunchEndTime) document.getElementById('policy-lunch-end').value = data.lunchEndTime.substring(0,5);
+      
+      if(data.standardCapacity) document.getElementById('policy-standard-capacity').value = data.standardCapacity;
+      if(data.capacityTolerancePercent !== undefined) document.getElementById('policy-capacity-tolerance').value = data.capacityTolerancePercent;
+    }
+  } catch (err) {
+    console.error("Error loading policies", err);
+  }
+}
+
+async function saveInstitutionPolicies() {
+  const classStart = document.getElementById('policy-class-start').value;
+  const classEnd = document.getElementById('policy-class-end').value;
+  const lunchStart = document.getElementById('policy-lunch-start').value;
+  const lunchEnd = document.getElementById('policy-lunch-end').value;
+  
+  const standardCap = document.getElementById('policy-standard-capacity').value;
+  const capTolerance = document.getElementById('policy-capacity-tolerance').value;
+
+  const payload = {
+    classStartTime: classStart ? classStart + ":00" : null,
+    classEndTime: classEnd ? classEnd + ":00" : null,
+    lunchStartTime: lunchStart ? lunchStart + ":00" : null,
+    lunchEndTime: lunchEnd ? lunchEnd + ":00" : null,
+    standardCapacity: standardCap ? parseInt(standardCap) : null,
+    capacityTolerancePercent: capTolerance ? parseInt(capTolerance) : null
+  };
+
+  try {
+    const res = await fetch('/api/policies', {
+      method: 'PUT',
+      headers: { 
+        'Authorization': 'Bearer ' + rawAuth?.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) {
+      toast("Configuración guardada correctamente", "success");
+    } else {
+      toast("Error al guardar configuración", "error");
+    }
+  } catch (err) {
+    console.error("Error saving policies", err);
+    toast("Error de red", "error");
+  }
+}
+
+// ─── Admin Subjects (HU-15) ───────────────────────────────────────────────────
+async function loadAdminSubjects() {
+  try {
+    const res = await fetch('/api/subjects', { headers: { 'Authorization': 'Bearer ' + rawAuth?.token } });
+    if (res.ok) {
+      const subjects = await res.json();
+      const tbody = document.getElementById("admin-subjects-table-body");
+      tbody.innerHTML = "";
+      
+      subjects.forEach(subj => {
+        tbody.innerHTML += `
+          <tr class="hover:bg-gray-50">
+            <td class="p-3 border-b font-mono text-sm">${subj.idSubject}</td>
+            <td class="p-3 border-b font-medium text-gray-800">${subj.subjectName}</td>
+            <td class="p-3 border-b text-center"><span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">${subj.sessionPerWeek}</span></td>
+            <td class="p-3 border-b text-gray-600">${subj.durationMinutes} min</td>
+          </tr>
+        `;
+      });
+    }
+  } catch (e) {
+    console.error("Error loading subjects", e);
+  }
+}
+
+function openCreateSubjectModal() {
+  document.getElementById("create-subject-id").value = "";
+  document.getElementById("create-subject-name").value = "";
+  document.getElementById("create-subject-sessions").value = "2";
+  document.getElementById("modal-create-subject").style.display = "flex";
+}
+
+function closeCreateSubjectModal() {
+  document.getElementById("modal-create-subject").style.display = "none";
+}
+
+async function createSubject() {
+  const idSubject = document.getElementById("create-subject-id").value.trim().toUpperCase();
+  const subjectName = document.getElementById("create-subject-name").value.trim();
+  const sessionPerWeek = parseInt(document.getElementById("create-subject-sessions").value);
+  
+  if (!idSubject || !subjectName) {
+    toast("El código y el nombre son obligatorios", "error");
+    return;
+  }
+  if (sessionPerWeek < 1 || sessionPerWeek > 4) {
+    toast("Las sesiones deben ser entre 1 y 4", "error");
+    return;
+  }
+  
+  const payload = {
+    idSubject,
+    subjectName,
+    sessionPerWeek,
+    durationMinutes: 120 // Regla de negocio fija
+  };
+  
+  try {
+    const res = await fetch('/api/subjects', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + rawAuth?.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    
+    if (res.ok) {
+      toast("Materia creada correctamente", "success");
+      closeCreateSubjectModal();
+      loadAdminSubjects();
+    } else {
+      const data = await res.json().catch(()=>null);
+      toast(data?.message || "Error al crear la materia", "error");
+    }
+  } catch (e) {
+    console.error(e);
+    toast("Error de red", "error");
+  }
 }
 
 // ─── Student Courses (HU-13) ──────────────────────────────────────────────────
