@@ -27,7 +27,7 @@ const ROLES = {
       { label:"Gestión de Usuarios", desc:"Administrar estudiantes y profesores", emoji:"👥", fn: ()=>navigateTo("teachers") },
       { label:"Gestión de Materias", desc:"Catálogo de materias", emoji:"📚", fn: ()=>navigateTo("subjects") },
       { label:"Gestión de Sesiones", desc:"Admin de Salones y Clases", emoji:"🏫", fn: ()=>navigateTo("courses") },
-      { label:"Generar Horario", desc:"Automático", emoji:"✨", fn: ()=>toast("Schedule generation started…","info") },
+      { label:"Diseñador de Horarios", desc:"Generar o editar horario manual", emoji:"✨", fn: ()=>navigateTo("schedule") },
       { label:"Configuración", desc:"Límites de Jornada y Almuerzo", emoji:"⚙️", fn: ()=>navigateTo("settings") }
     ],
     showConflictAlert: true,
@@ -874,6 +874,49 @@ function cellDragOver(e) {
 }
 function cellDragLeave(e) { e.currentTarget.classList.remove("over","clash"); }
 
+function checkConsecutiveDays(courseCode, courseGroup, toDay, fromDay) {
+  const toIdx = DAYS.indexOf(toDay);
+  if (toIdx === -1) return true;
+  
+  let scheduledDays = [];
+  for (const slot in scheduleData) {
+    for (const d in scheduleData[slot]) {
+      if (d === fromDay) continue; // skip the origin if moving
+      
+      const s = scheduleData[slot][d];
+      if (s && s.code === courseCode && s.group === courseGroup) {
+        if (!scheduledDays.includes(d)) scheduledDays.push(d);
+      }
+    }
+  }
+  
+  const totalSessions = scheduledDays.length + 1;
+  
+  // HU-12: Policy only for 2 or 3 weekly sessions
+  if (totalSessions !== 2 && totalSessions !== 3) {
+    return true;
+  }
+  
+  let hasAdjacent = false;
+  for (const d of scheduledDays) {
+    const dIdx = DAYS.indexOf(d);
+    if (Math.abs(dIdx - toIdx) === 1) {
+      hasAdjacent = true;
+      break;
+    }
+  }
+  
+  if (hasAdjacent) {
+    const msg = `Asignación en días consecutivos detectada para ${courseCode} (${courseGroup}).\n\nPara un aprendizaje óptimo, la política institucional sugiere alternar días para cursos de 2 o 3 sesiones semanales.\n\n¿Deseas registrar la excepción y agendar de todos modos?`;
+    if(!confirm(msg)) {
+      toast("Asignación cancelada. Selecciona un día alternativo.", "info");
+      return false;
+    }
+  }
+  
+  return true;
+}
+
 function cellDrop(e) {
   e.preventDefault();
   const cell = e.currentTarget;
@@ -885,6 +928,10 @@ function cellDrop(e) {
     if (fromSlot===toSlot && fromDay===toDay) { dragSrc=null; return; }
     const s = scheduleData[fromSlot]?.[fromDay];
     if (!s) { dragSrc=null; return; }
+    
+    // HU-12: Validate consecutive days
+    if (!checkConsecutiveDays(s.code, s.group, toDay, fromDay)) { dragSrc=null; return; }
+    
     const existing = scheduleData[toSlot]?.[toDay];
     if (!scheduleData[toSlot]) scheduleData[toSlot] = {};
     scheduleData[toSlot][toDay] = s;
@@ -896,6 +943,10 @@ function cellDrop(e) {
     const item = pool[dragSrc.idx];
     if (!item) { dragSrc=null; return; }
     if (scheduleData[toSlot]?.[toDay]) { toast("That cell is occupied","error"); dragSrc=null; return; }
+    
+    // HU-12: Validate consecutive days (no fromDay)
+    if (!checkConsecutiveDays(item.code, item.group, toDay, null)) { dragSrc=null; return; }
+    
     if (!scheduleData[toSlot]) scheduleData[toSlot] = {};
     scheduleData[toSlot][toDay] = { ...item };
     pool.splice(dragSrc.idx, 1);
