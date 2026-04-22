@@ -3,6 +3,9 @@ package com.example.Midaxus.model.mapper;
 import com.example.Midaxus.model.dtos.TeacherDTO;
 import com.example.Midaxus.model.entities.Teacher;
 
+import com.example.Midaxus.model.dtos.TeacherAvailabilityDTO;
+import com.example.Midaxus.model.entities.Subject;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -11,15 +14,25 @@ public class TeacherMapper {
     public static TeacherDTO  toDTO(Teacher teacher){
         if (teacher == null) return null;
 
-        return new TeacherDTO(teacher.getId(),
+        TeacherDTO dto = new TeacherDTO(teacher.getId(),
                               teacher.getTeacherCode(),
                               teacher.getUserName(),
                               teacher.getFirstName(),
                               teacher.getLastName(),
                               teacher.getEmail(),
                               teacher.getPassword());
-
-
+        
+        if (teacher.getHabilitatedSubjects() != null) {
+            dto.setSubjectsIds(teacher.getHabilitatedSubjects().stream().map(Subject::getIdSubject).toList());
+        }
+        
+        if (teacher.getAvailabilities() != null) {
+            dto.setAvailabilities(teacher.getAvailabilities().stream().map(a -> 
+                new TeacherAvailabilityDTO(a.getDayOfWeek(), a.getStartTime(), a.getEndTime())
+            ).toList());
+        }
+        
+        return dto;
     }
     public static Teacher toEntity(TeacherDTO dto){
         if (dto == null) return null;

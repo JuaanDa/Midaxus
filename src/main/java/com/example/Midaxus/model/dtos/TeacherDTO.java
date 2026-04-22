@@ -1,10 +1,16 @@
 package com.example.Midaxus.model.dtos;
 
+import java.util.Date;
+import java.util.List;
+
 public class TeacherDTO {
 
     private String id;
     private String teacherCode;
     private String userName;
+    private Date startDate;
+    private List<String> subjectsIds;
+    private List<TeacherAvailabilityDTO> availabilities;
     private String firstName;
     private String lastName;
     private String password;
@@ -46,6 +52,30 @@ public class TeacherDTO {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public List<String> getSubjectsIds() {
+        return subjectsIds;
+    }
+
+    public void setSubjectsIds(List<String> subjectsIds) {
+        this.subjectsIds = subjectsIds;
+    }
+
+    public List<TeacherAvailabilityDTO> getAvailabilities() {
+        return availabilities;
+    }
+
+    public void setAvailabilities(List<TeacherAvailabilityDTO> availabilities) {
+        this.availabilities = availabilities;
     }
 
     public String getFirstName() {

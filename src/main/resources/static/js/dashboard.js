@@ -222,6 +222,7 @@ async function loadInstitutionPolicies() {
       
       if(data.standardCapacity) document.getElementById('policy-standard-capacity').value = data.standardCapacity;
       if(data.capacityTolerancePercent !== undefined) document.getElementById('policy-capacity-tolerance').value = data.capacityTolerancePercent;
+      if(data.maxSessionsPerWeek !== undefined) document.getElementById('policy-max-sessions').value = data.maxSessionsPerWeek;
     }
   } catch (err) {
     console.error("Error loading policies", err);
@@ -236,6 +237,7 @@ async function saveInstitutionPolicies() {
   
   const standardCap = document.getElementById('policy-standard-capacity').value;
   const capTolerance = document.getElementById('policy-capacity-tolerance').value;
+  const maxSessions = document.getElementById('policy-max-sessions').value;
 
   const payload = {
     classStartTime: classStart ? classStart + ":00" : null,
@@ -243,7 +245,8 @@ async function saveInstitutionPolicies() {
     lunchStartTime: lunchStart ? lunchStart + ":00" : null,
     lunchEndTime: lunchEnd ? lunchEnd + ":00" : null,
     standardCapacity: standardCap ? parseInt(standardCap) : null,
-    capacityTolerancePercent: capTolerance ? parseInt(capTolerance) : null
+    capacityTolerancePercent: capTolerance ? parseInt(capTolerance) : null,
+    maxSessionsPerWeek: maxSessions ? parseInt(maxSessions) : null
   };
 
   try {
@@ -342,6 +345,164 @@ async function createSubject() {
       toast(data?.message || "Error al crear la materia", "error");
     }
   } catch (e) {
+    console.error(e);
+    toast("Error de red", "error");
+  }
+}
+
+// ─── Admin Teachers (HU-6) ────────────────────────────────────────────────────
+let allSubjectsCache = [];
+
+async function loadAdminTeachers() {
+  try {
+    const res = await fetch('/api/teachers', { headers: { 'Authorization': 'Bearer ' + rawAuth?.token } });
+    if (res.ok) {
+      const teachers = await res.json();
+      const tbody = document.getElementById("admin-teachers-table-body");
+      if(!tbody) return;
+      tbody.innerHTML = "";
+      
+      teachers.forEach(t => {
+        const comps = t.subjectsIds ? t.subjectsIds.length : 0;
+        tbody.innerHTML += `
+          <tr class="hover:bg-gray-50">
+            <td class="p-3 border-b font-mono text-sm">${t.teacherCode}</td>
+            <td class="p-3 border-b font-medium text-gray-800">${t.firstName} ${t.lastName}</td>
+            <td class="p-3 border-b"><span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">${comps} materias</span></td>
+            <td class="p-3 border-b">
+              <button class="text-purple-600 hover:text-purple-800" onclick="openTeacherDetailsModal('${t.teacherCode}', '${t.firstName} ${t.lastName}')">
+                <i class="fas fa-edit"></i> Editar Perfil
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+  } catch(e) { console.error(e); }
+}
+
+async function openTeacherDetailsModal(teacherCode, teacherName) {
+  document.getElementById("edit-teacher-id").value = teacherCode;
+  document.getElementById("edit-teacher-name").innerText = teacherName;
+  
+  document.getElementById("teacher-availability-list").innerHTML = "";
+  document.getElementById("teacher-competences-list").innerHTML = "<p class='text-sm text-gray-500'>Cargando...</p>";
+  
+  document.getElementById("modal-teacher-details").style.display = "flex";
+  
+  try {
+    if (allSubjectsCache.length === 0) {
+      const sRes = await fetch('/api/subjects', { headers: { 'Authorization': 'Bearer ' + rawAuth?.token } });
+      if (sRes.ok) allSubjectsCache = await sRes.json();
+    }
+    
+    const tRes = await fetch('/api/teachers', { headers: { 'Authorization': 'Bearer ' + rawAuth?.token } });
+    let teacher = null;
+    if (tRes.ok) {
+      const teachers = await tRes.json();
+      teacher = teachers.find(t => t.teacherCode === teacherCode);
+    }
+    
+    if (!teacher) return;
+    
+    // Render Competences (Checkboxes)
+    const compBox = document.getElementById("teacher-competences-list");
+    compBox.innerHTML = "";
+    allSubjectsCache.forEach(subj => {
+      const isChecked = teacher.subjectsIds && teacher.subjectsIds.includes(subj.idSubject) ? "checked" : "";
+      compBox.innerHTML += `
+        <label class="flex items-center gap-2 text-sm bg-white p-2 border rounded cursor-pointer hover:bg-gray-50">
+          <input type="checkbox" class="subj-checkbox" value="${subj.idSubject}" ${isChecked}>
+          <span class="font-mono text-xs text-gray-500">${subj.idSubject}</span> ${subj.subjectName}
+        </label>
+      `;
+    });
+    
+    // Render Availabilities
+    if (teacher.availabilities) {
+      teacher.availabilities.forEach(av => {
+        addTeacherAvailabilityRowDirect(av.dayOfWeek, av.startTime.substring(0,5), av.endTime.substring(0,5));
+      });
+    }
+    
+  } catch(e) { console.error(e); }
+}
+
+function closeTeacherDetailsModal() {
+  document.getElementById("modal-teacher-details").style.display = "none";
+}
+
+function addTeacherAvailabilityRow() {
+  const day = document.getElementById("new-avail-day").value;
+  const start = document.getElementById("new-avail-start").value;
+  const end = document.getElementById("new-avail-end").value;
+  
+  if(!start || !end) {
+    toast("Selecciona hora de inicio y fin", "error");
+    return;
+  }
+  if(start >= end) {
+    toast("La hora de inicio debe ser menor a la hora de fin", "error");
+    return;
+  }
+  
+  addTeacherAvailabilityRowDirect(day, start, end);
+}
+
+function addTeacherAvailabilityRowDirect(day, start, end) {
+  const ul = document.getElementById("teacher-availability-list");
+  const li = document.createElement("li");
+  li.className = "flex justify-between items-center bg-white p-2 border rounded text-sm avail-item";
+  li.innerHTML = `
+    <span class="font-medium text-gray-700 avail-day w-24">${day}</span>
+    <span class="text-gray-600 avail-time"><span class="avail-start">${start}</span> - <span class="avail-end">${end}</span></span>
+    <button type="button" class="text-red-500 hover:text-red-700" onclick="this.parentElement.remove()">
+      <i class="fas fa-trash"></i>
+    </button>
+  `;
+  ul.appendChild(li);
+}
+
+async function saveTeacherDetails() {
+  const teacherId = document.getElementById("edit-teacher-id").value;
+  
+  // Get checked subjects
+  const checkboxes = document.querySelectorAll(".subj-checkbox:checked");
+  const subjectsIds = Array.from(checkboxes).map(cb => cb.value);
+  
+  // Get availabilities
+  const availItems = document.querySelectorAll(".avail-item");
+  const availabilities = Array.from(availItems).map(item => {
+    return {
+      dayOfWeek: item.querySelector(".avail-day").innerText,
+      startTime: item.querySelector(".avail-start").innerText + ":00",
+      endTime: item.querySelector(".avail-end").innerText + ":00"
+    };
+  });
+  
+  const payload = {
+    subjectsIds,
+    availabilities
+  };
+  
+  try {
+    const res = await fetch('/api/teachers/' + teacherId, {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Bearer ' + rawAuth?.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    
+    if (res.ok) {
+      toast("Perfil docente actualizado", "success");
+      closeTeacherDetailsModal();
+      loadAdminTeachers();
+    } else {
+      toast("Error al actualizar perfil", "error");
+    }
+  } catch(e) {
     console.error(e);
     toast("Error de red", "error");
   }

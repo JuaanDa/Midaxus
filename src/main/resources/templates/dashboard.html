@@ -206,6 +206,84 @@
         </div>
       </section>
 
+      <!-- ── TEACHERS (Profesores) (Admin) ── -->
+      <section id="screen-teachers" class="screen">
+        <div class="bg-white rounded-lg shadow-md p-6">
+          <div class="flex justify-between items-center mb-6">
+            <div>
+              <h1 class="text-2xl font-bold text-gray-800">Gestión de Usuarios (Profesores)</h1>
+              <p class="text-gray-600">Administra profesores, sus competencias y su disponibilidad horaria (HU-6)</p>
+            </div>
+          </div>
+          
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-purple-50 text-purple-800">
+                  <th class="p-3 border-b border-purple-100">ID / Código</th>
+                  <th class="p-3 border-b border-purple-100">Nombre Completo</th>
+                  <th class="p-3 border-b border-purple-100">Competencias</th>
+                  <th class="p-3 border-b border-purple-100">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="admin-teachers-table-body" class="divide-y divide-gray-100">
+                <!-- Dinámico -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <!-- Modal Editar Profesor (Competencias y Disponibilidad) -->
+        <div id="modal-teacher-details" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50 overflow-y-auto">
+          <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl my-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2"><i class="fas fa-chalkboard-user"></i> Perfil Docente</h2>
+            <input type="hidden" id="edit-teacher-id">
+            <p id="edit-teacher-name" class="text-gray-600 mb-6 font-medium text-lg"></p>
+            
+            <!-- Competencias -->
+            <div class="mb-6">
+              <h3 class="font-bold text-gray-700 mb-2 border-b pb-1">Asignaturas Habilitadas (Competencias)</h3>
+              <div id="teacher-competences-list" class="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto p-2 bg-gray-50 rounded border">
+                <!-- Checkboxes de materias -->
+              </div>
+            </div>
+            
+            <!-- Disponibilidad -->
+            <div class="mb-6">
+              <h3 class="font-bold text-gray-700 mb-2 border-b pb-1">Disponibilidad Horaria</h3>
+              <div class="bg-gray-50 p-3 rounded border mb-3 flex gap-2 items-end">
+                <div class="flex-1">
+                  <label class="text-xs text-gray-500">Día</label>
+                  <select id="new-avail-day" class="w-full border rounded p-1 text-sm">
+                    <option value="LUNES">Lunes</option><option value="MARTES">Martes</option><option value="MIERCOLES">Miércoles</option>
+                    <option value="JUEVES">Jueves</option><option value="VIERNES">Viernes</option><option value="SABADO">Sábado</option>
+                  </select>
+                </div>
+                <div class="flex-1">
+                  <label class="text-xs text-gray-500">Inicio</label>
+                  <input type="time" id="new-avail-start" class="w-full border rounded p-1 text-sm">
+                </div>
+                <div class="flex-1">
+                  <label class="text-xs text-gray-500">Fin</label>
+                  <input type="time" id="new-avail-end" class="w-full border rounded p-1 text-sm">
+                </div>
+                <button type="button" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm" onclick="addTeacherAvailabilityRow()">
+                  <i class="fas fa-plus"></i> Agregar
+                </button>
+              </div>
+              <ul id="teacher-availability-list" class="space-y-2">
+                <!-- Filas de disponibilidad dinámicas -->
+              </ul>
+            </div>
+            
+            <div class="flex justify-end gap-3 mt-6 pt-4 border-t">
+              <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50" onclick="closeTeacherDetailsModal()">Cancelar</button>
+              <button class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg" onclick="saveTeacherDetails()"><i class="fas fa-save"></i> Guardar Cambios</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- ── SCHEDULE ── -->
       <section id="screen-schedule" class="screen">
         <div class="bg-white rounded-lg shadow-md p-6 overflow-x-auto">
@@ -331,6 +409,16 @@
                   <input type="number" id="policy-capacity-tolerance" min="0" max="100" class="w-full border border-gray-300 rounded-lg py-2 pl-10 pr-3 focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Ej: 10">
                 </div>
                 <p class="text-xs text-gray-500 mt-1">El aforo máximo será el estándar + este porcentaje.</p>
+              </div>
+              <div class="col-span-1 md:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Límite Máximo de Sesiones Semanales (HU-11)</label>
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-calendar-week text-gray-400"></i>
+                  </div>
+                  <input type="number" id="policy-max-sessions" min="1" max="10" class="w-full border border-gray-300 rounded-lg py-2 pl-10 pr-3 focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Ej: 4">
+                </div>
+                <p class="text-xs text-gray-500 mt-1">Número máximo de veces que una materia se puede dictar por semana.</p>
               </div>
             </div>
 

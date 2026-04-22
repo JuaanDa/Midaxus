@@ -26,6 +26,7 @@ public class InstitutionPolicyService implements IInstitutionPolicy {
             defaultPolicy.setLunchEndTime(LocalTime.of(13, 30));
             defaultPolicy.setStandardCapacity(40);
             defaultPolicy.setCapacityTolerancePercent(10);
+            defaultPolicy.setMaxSessionsPerWeek(4);
             return repository.save(defaultPolicy);
         });
         return toDTO(policy);
@@ -41,6 +42,7 @@ public class InstitutionPolicyService implements IInstitutionPolicy {
         if (dto.getLunchEndTime() != null) policy.setLunchEndTime(dto.getLunchEndTime());
         if (dto.getStandardCapacity() != null) policy.setStandardCapacity(dto.getStandardCapacity());
         if (dto.getCapacityTolerancePercent() != null) policy.setCapacityTolerancePercent(dto.getCapacityTolerancePercent());
+        if (dto.getMaxSessionsPerWeek() != null) policy.setMaxSessionsPerWeek(dto.getMaxSessionsPerWeek());
         
         policy = repository.save(policy);
         return toDTO(policy);
@@ -55,6 +57,7 @@ public class InstitutionPolicyService implements IInstitutionPolicy {
         dto.setLunchEndTime(entity.getLunchEndTime());
         dto.setStandardCapacity(entity.getStandardCapacity());
         dto.setCapacityTolerancePercent(entity.getCapacityTolerancePercent());
+        dto.setMaxSessionsPerWeek(entity.getMaxSessionsPerWeek());
         return dto;
     }
 }

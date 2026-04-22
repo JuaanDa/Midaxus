@@ -28,6 +28,9 @@ public class InstitutionPolicy {
     @Column(name = "capacity_tolerance_percent")
     private Integer capacityTolerancePercent;
 
+    @Column(name = "max_sessions_per_week")
+    private Integer maxSessionsPerWeek;
+
     public Long getId() {
         return id;
     }
@@ -82,5 +85,13 @@ public class InstitutionPolicy {
 
     public void setCapacityTolerancePercent(Integer capacityTolerancePercent) {
         this.capacityTolerancePercent = capacityTolerancePercent;
+    }
+
+    public Integer getMaxSessionsPerWeek() {
+        return maxSessionsPerWeek;
+    }
+
+    public void setMaxSessionsPerWeek(Integer maxSessionsPerWeek) {
+        this.maxSessionsPerWeek = maxSessionsPerWeek;
     }
 }

@@ -2,11 +2,12 @@ package com.example.Midaxus.services;
 
 import java.util.List;
 
-public interface ITeacher<J, K> {
+public interface ITeacher<T, ID> {
 
-    J createTeacher(J teacher);
-    void deleteTeacher(K k);
-    J getTeacher(K k);
-    List<J> getTeachers();
+    T createTeacher(T dto);
+    T updateTeacher(ID id, T dto);
+    void deleteTeacher(ID id);
+    T getTeacher(ID id);
+    List<T> getTeachers();
 
 }

@@ -24,6 +24,11 @@ public class TeacherController {
                 .body(done);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<TeacherDTO> updateTeacher(@PathVariable String id, @RequestBody TeacherDTO dto) {
+        return ResponseEntity.ok(teacherService.updateTeacher(id, dto));
+    }
+
     @GetMapping
     public ResponseEntity<List<TeacherDTO>> getTeachers() {
         return ResponseEntity.ok(teacherService.getTeachers());

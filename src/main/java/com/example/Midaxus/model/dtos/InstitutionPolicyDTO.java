@@ -10,6 +10,7 @@ public class InstitutionPolicyDTO {
     private LocalTime lunchEndTime;
     private Integer standardCapacity;
     private Integer capacityTolerancePercent;
+    private Integer maxSessionsPerWeek;
 
     public Long getId() {
         return id;
@@ -65,5 +66,13 @@ public class InstitutionPolicyDTO {
 
     public void setCapacityTolerancePercent(Integer capacityTolerancePercent) {
         this.capacityTolerancePercent = capacityTolerancePercent;
+    }
+
+    public Integer getMaxSessionsPerWeek() {
+        return maxSessionsPerWeek;
+    }
+
+    public void setMaxSessionsPerWeek(Integer maxSessionsPerWeek) {
+        this.maxSessionsPerWeek = maxSessionsPerWeek;
     }
 }
