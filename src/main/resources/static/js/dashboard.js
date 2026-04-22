@@ -171,13 +171,187 @@ function navigateTo(id) {
   document.querySelectorAll("#sidebar-menu li").forEach(li => li.classList.toggle("active", li.dataset.id===id));
 
   if (id === "schedule") {
-    const session = (typeof getSession==="function" ? getSession() : null) || demoSession();
-    const editable = ROLES[session.role]?.scheduleEditable || false;
+    const sessionObj = (typeof getSession==="function" ? getSession() : null) || demoSession();
+    const editable = ROLES[sessionObj.role]?.scheduleEditable || false;
     buildScheduleUI(editable);
     buildScheduleGrid(editable);
   }
+  
+  if (id === "courses" && session.role === "ADMIN") {
+    loadAdminCourses();
+  }
+  
+  if (id === "dashboard" && session.role === "STUDENT") {
+    loadStudentCourses();
+  }
+  
   window.scrollTo(0,0);
 }
+
+// ─── Student Courses (HU-13) ──────────────────────────────────────────────────
+async function loadStudentCourses() {
+  try {
+    const [coursesRes, teachersRes] = await Promise.all([
+      fetch('/api/course-groups', { headers: { 'Authorization': 'Bearer ' + rawAuth?.token } }),
+      fetch('/api/teachers', { headers: { 'Authorization': 'Bearer ' + rawAuth?.token } })
+    ]);
+    
+    let courses = [];
+    let teachers = [];
+    if (coursesRes.ok) courses = await coursesRes.json();
+    if (teachersRes.ok) teachers = await teachersRes.json();
+    
+    const tbody = document.getElementById("student-courses-table-body");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+    
+    if (courses.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No hay sesiones disponibles.</td></tr>`;
+      return;
+    }
+    
+    courses.forEach(cg => {
+      const teacher = teachers.find(t => t.teacherId === cg.teacherId || t.teacherCode === cg.teacherId);
+      const teacherName = teacher ? teacher.name : (cg.teacherId || "Sin asignar");
+      const cuposDisp = cg.capacity > 0 ? cg.capacity : 0;
+      const status = cuposDisp > 0 ? '<span class="badge green">Disponible</span>' : '<span class="badge red">Lleno</span>';
+      
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${cg.code || "N/A"}</td>
+        <td>${cg.subjectId || "Materia"}</td>
+        <td>${teacherName}</td>
+        <td>${cuposDisp}</td>
+        <td>${status}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch (err) {
+    console.error("Error loading student courses", err);
+  }
+}
+
+// ─── Admin Courses (HU-13) ───────────────────────────────────────────────────
+let adminCoursesData = [];
+let allTeachersData = [];
+
+async function loadAdminCourses() {
+  try {
+    const [coursesRes, teachersRes] = await Promise.all([
+      fetch('/api/course-groups', { headers: { 'Authorization': 'Bearer ' + rawAuth?.token } }),
+      fetch('/api/teachers', { headers: { 'Authorization': 'Bearer ' + rawAuth?.token } })
+    ]);
+    
+    if (coursesRes.ok) adminCoursesData = await coursesRes.json();
+    if (teachersRes.ok) allTeachersData = await teachersRes.json();
+    
+    renderAdminCourses();
+    populateTeacherSelect();
+  } catch (err) {
+    console.error("Error loading courses or teachers", err);
+    toast("Error cargando sesiones", "error");
+  }
+}
+
+function renderAdminCourses() {
+  const tbody = document.getElementById("admin-courses-table-body");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+  
+  if (adminCoursesData.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No hay sesiones registradas.</td></tr>`;
+    return;
+  }
+  
+  adminCoursesData.forEach(cg => {
+    // Buscar nombre del profesor para mostrar
+    const teacher = allTeachersData.find(t => t.teacherId === cg.teacherId || t.teacherCode === cg.teacherId);
+    const teacherName = teacher ? teacher.name : (cg.teacherId || "Sin asignar");
+    
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${cg.code || "N/A"}</td>
+      <td>${cg.subjectId || "Materia"}</td>
+      <td>${teacherName}</td>
+      <td>${cg.capacity || 0}</td>
+      <td>
+        <button class="btn-outline" onclick="openEditSessionModal('${cg.courseGroupId}')"><i class="fas fa-edit"></i> Asignar</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function populateTeacherSelect() {
+  const select = document.getElementById("edit-session-teacher");
+  if (!select) return;
+  
+  // Limpiar y dejar el default
+  select.innerHTML = '<option value="">Seleccione un profesor...</option>';
+  
+  allTeachersData.forEach(t => {
+    const opt = document.createElement("option");
+    opt.value = t.teacherId || t.teacherCode;
+    opt.textContent = t.name;
+    select.appendChild(opt);
+  });
+}
+
+function openEditSessionModal(courseGroupId) {
+  const cg = adminCoursesData.find(c => c.courseGroupId === courseGroupId);
+  if (!cg) return;
+  
+  document.getElementById("edit-session-id").value = cg.courseGroupId;
+  document.getElementById("edit-session-teacher").value = cg.teacherId || "";
+  document.getElementById("edit-session-capacity").value = cg.capacity || 30;
+  
+  document.getElementById("modal-edit-session").style.display = "flex";
+}
+
+function closeEditSessionModal() {
+  document.getElementById("modal-edit-session").style.display = "none";
+}
+
+async function saveSessionAssignment() {
+  const id = document.getElementById("edit-session-id").value;
+  const teacherId = document.getElementById("edit-session-teacher").value;
+  const capacity = document.getElementById("edit-session-capacity").value;
+  
+  if (!teacherId) {
+    toast("Debe seleccionar un profesor", "error");
+    return;
+  }
+  
+  const cg = adminCoursesData.find(c => c.courseGroupId === id);
+  if (!cg) return;
+  
+  // Actualizar el DTO
+  cg.teacherId = teacherId;
+  cg.capacity = parseInt(capacity, 10);
+  
+  try {
+    const res = await fetch('/api/course-groups/' + id, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + rawAuth?.token
+      },
+      body: JSON.stringify(cg)
+    });
+    
+    if (res.ok) {
+      toast("Sesión asignada correctamente", "success");
+      closeEditSessionModal();
+      loadAdminCourses(); // Refrescar la tabla
+    } else {
+      toast("Error al guardar la sesión", "error");
+    }
+  } catch(err) {
+    console.error(err);
+    toast("Error de red", "error");
+  }
+}
+
 window.navigateTo = navigateTo;
 
 // ─── Sidebar ──────────────────────────────────────────────────────────────────

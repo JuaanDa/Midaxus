@@ -70,11 +70,9 @@
         <div id="student-courses" style="display:none; margin-top:2rem;">
           <h3 style="margin-bottom:1rem;"><i class="fas fa-book-open"></i> Cursos inscritos</h3>
           <table class="data-table">
-            <thead><tr><th>Code</th><th>Course</th><th>Instructor</th><th>Days</th><th>Room</th></tr></thead>
-            <tbody>
-            <tr><td>MAT101</td><td>Calculus I</td><td>Dr. Johnson</td><td>Mon / Wed</td><td>301</td></tr>
-            <tr><td>PHY201</td><td>Physics II</td><td>Dr. Smith</td><td>Tue / Thu</td><td>205</td></tr>
-            <tr><td>BIO150</td><td>Biology I</td><td>Dr. Brown</td><td>Fri</td><td>108</td></tr>
+            <thead><tr><th>Código</th><th>Materia</th><th>Profesor</th><th>Cupos</th><th>Estado</th></tr></thead>
+            <tbody id="student-courses-table-body">
+              <!-- Cargado dinámicamente -->
             </tbody>
           </table>
         </div>
@@ -125,24 +123,33 @@
 
       <!-- ── COURSES (Admin) ── -->
       <section id="screen-courses" class="screen">
-        <h1>Course Management</h1>
-        <p class="section-sub">Manage courses for the semester</p>
-        <button class="btn-primary" style="margin-bottom:1.5rem;"><i class="fas fa-plus"></i> New Course</button>
+        <h1>Gestión de Sesiones</h1>
+        <p class="section-sub">Administra la asignación de profesores y cupos</p>
+        <button class="btn-primary" style="margin-bottom:1.5rem;"><i class="fas fa-plus"></i> Nueva Sesión</button>
         <table class="data-table">
-          <thead><tr><th>Code</th><th>Course</th><th>Instructor</th><th>Enrollment</th><th>Status</th></tr></thead>
-          <tbody>
-          <tr><td>MAT101</td><td>Calculus I</td><td>Dr. Johnson</td><td>45</td><td><span class="badge green">Active</span></td></tr>
-          <tr><td>PHY201</td><td>Physics II</td><td>Dr. Smith</td><td>38</td><td><span class="badge green">Active</span></td></tr>
-          <tr><td>CHEM100</td><td>General Chemistry</td><td>Dr. Lewis</td><td>7</td><td><span class="badge red">Below Min</span></td></tr>
-          <tr><td>BIO150</td><td>Biology I</td><td>Dr. Brown</td><td>42</td><td><span class="badge green">Active</span></td></tr>
+          <thead><tr><th>Código</th><th>Materia</th><th>Profesor</th><th>Cupos</th><th>Acciones</th></tr></thead>
+          <tbody id="admin-courses-table-body">
           </tbody>
         </table>
-        <div class="info-box warn">
-          <i class="fas fa-lightbulb"></i>
-          <div><strong>Suggestion:</strong> CHEM100 has only 7 students (below minimum of 10). Consider merging sections.
-            <div style="margin-top:.8rem; display:flex; gap:.5rem;">
-              <button class="btn-primary">Merge Sections</button>
-              <button class="btn-outline">Dismiss</button>
+        
+        <!-- Edit Session Modal -->
+        <div id="modal-edit-session" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center;">
+          <div class="modal-content" style="background:var(--bg-card); padding:2rem; border-radius:8px; width:400px; max-width:90%; color:var(--text-main);">
+            <h2 style="margin-bottom:1rem; color:var(--text-main);">Asignar Sesión</h2>
+            <input type="hidden" id="edit-session-id">
+            <div class="form-row" style="margin-bottom:1rem;">
+              <label style="display:block; margin-bottom:.5rem;">Profesor</label>
+              <select id="edit-session-teacher" class="field" style="width:100%;">
+                <option value="">Seleccione un profesor...</option>
+              </select>
+            </div>
+            <div class="form-row" style="margin-bottom:1.5rem;">
+              <label style="display:block; margin-bottom:.5rem;">Capacidad de Estudiantes</label>
+              <input type="number" id="edit-session-capacity" class="field" style="width:100%;" min="1" max="200" value="30">
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:1rem;">
+              <button class="btn-outline" onclick="closeEditSessionModal()">Cancelar</button>
+              <button class="btn-primary" onclick="saveSessionAssignment()"><i class="fas fa-save"></i> Guardar</button>
             </div>
           </div>
         </div>
