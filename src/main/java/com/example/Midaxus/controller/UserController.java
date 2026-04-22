@@ -5,6 +5,7 @@ import com.example.Midaxus.services.IUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.net.URI;
 
@@ -16,6 +17,7 @@ public class UserController {
     private IUser<UserDTO, String> userRepos;
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO dto) {
 
         UserDTO created = userRepos.createUser(dto);
@@ -27,6 +29,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteUser(@PathVariable String id){
         userRepos.deleteUser(id);
         return ResponseEntity.noContent().build();

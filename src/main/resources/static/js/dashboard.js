@@ -93,19 +93,40 @@ let pool = [
 let dragSrc    = null;
 let selectedEl = null;
 
-// Reemplaza las dos líneas donde obtienes la sesión
+function decodeJWT(token) {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch(e) {
+    return null;
+  }
+}
+
 const stored = localStorage.getItem("user") || sessionStorage.getItem("user");
-const raw = stored ? JSON.parse(stored) : demoSession();
-const session = { ...raw, role: raw.role?.toUpperCase() };
-// 🔍 Temporal: borra esto después de confirmar
-console.log("SESSION:", session);
-console.log("ROLE:", session.role);
-console.log("CFG:", ROLES[session.role]);
+let rawAuth = stored ? JSON.parse(stored) : null;
+let session = null;
+
+if (rawAuth && rawAuth.token) {
+  const payload = decodeJWT(rawAuth.token);
+  if (payload) {
+    session = {
+      role: payload.role.replace("ROLE_", "").toUpperCase(),
+      email: payload.email,
+      name: payload.name,
+      initials: payload.name ? payload.name[0].toUpperCase() : "U"
+    };
+  }
+}
+
+if (!session) {
+  console.error("Sesión inválida o expirada");
+  window.location.href = "/login";
+  throw new Error("Abort");
+}
 
 const cfg = ROLES[session.role];
 if (!cfg) {
   console.error("Rol no reconocido:", session.role);
-  window.location.href = "login.html";
+  window.location.href = "/login";
 }
   // Navbar
   document.getElementById("user-initials").textContent = session.initials || session.role[0];
@@ -117,7 +138,7 @@ if (!cfg) {
   document.getElementById("btn-logout").addEventListener("click", () => {
     if (typeof clearSession === "function") clearSession();
     else sessionStorage.clear();
-    window.location.href = "login.html";
+    window.location.href = "/login";
   });
 
   buildSidebar(cfg.menu);

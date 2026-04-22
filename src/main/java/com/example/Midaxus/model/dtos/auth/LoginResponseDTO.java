@@ -4,12 +4,14 @@ public class LoginResponseDTO {
     private boolean success;
     private String message;
     private String userType;
+    private String token;
     private Object data;
 
-    public LoginResponseDTO(boolean success, String message, String userType, Object data) {
+    public LoginResponseDTO(boolean success, String message, String userType, String token, Object data) {
         this.success = success;
         this.message = message;
         this.userType = userType;
+        this.token = token;
         this.data = data;
     }
 
@@ -37,6 +39,14 @@ public class LoginResponseDTO {
 
     public void setUserType(String userType) {
         this.userType = userType;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public Object getData() {

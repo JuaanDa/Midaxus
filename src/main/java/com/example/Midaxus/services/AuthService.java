@@ -13,17 +13,21 @@ import com.example.Midaxus.repositories.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.Midaxus.util.JwtUtil;
+
 @Service
 public class AuthService {
 
     private final UserRepository userRepository;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
-    public AuthService(UserRepository userRepository, EmailService emailService, PasswordEncoder passwordEncoder) {
+    public AuthService(UserRepository userRepository, EmailService emailService, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.emailService = emailService;
         this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
     }
 
     // -----------------------
@@ -34,11 +38,11 @@ public class AuthService {
         User user = userRepository.findByEmail(login.getEmail()).orElse(null);
 
         if (user == null) {
-            return new LoginResponseDTO(false, "El correo no está registrado", null, null);
+            return new LoginResponseDTO(false, "El correo no está registrado", null, null, null);
         }
 
         if (!passwordEncoder.matches(login.getPassword(), user.getPassword())) {
-            return new LoginResponseDTO(false, "Contraseña incorrecta", null, null);
+            return new LoginResponseDTO(false, "Contraseña incorrecta", null, null, null);
         }
 
         Object dto;
@@ -57,10 +61,12 @@ public class AuthService {
             role = "ADMIN";
 
         } else {
-            return new LoginResponseDTO(false, "Tipo de usuario desconocido", null, null);
+            return new LoginResponseDTO(false, "Tipo de usuario desconocido", null, null, null);
         }
 
-        return new LoginResponseDTO(true, "Login exitoso", role, dto);
+        String token = jwtUtil.generateToken(user.getEmail(), role, user.getEmail(), user.getFirstName());
+
+        return new LoginResponseDTO(true, "Login exitoso", role, token, dto);
     }
     }
 

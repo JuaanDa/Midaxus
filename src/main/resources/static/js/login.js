@@ -79,22 +79,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (remember) {
         localStorage.setItem("user", JSON.stringify(data));
+      } else {
+        sessionStorage.setItem("user", JSON.stringify(data));
       }
 
       setTimeout(() => {
-        window.location.href = "dashboard.html";
+        window.location.href = "/dashboard";
       }, 1200);
 
     } catch (error) {
-      // Dentro del try, después de recibir data
-      sessionStorage.setItem("user", JSON.stringify(data)); // siempre
-
-      if (remember) {
-        localStorage.setItem("user", JSON.stringify(data)); // adicional si marcó
-      }
-
       console.error("Error login:", error);
-      showNotification('Error en el servidor', 'error');
+      showNotification('Error en el servidor o red', 'error');
     }
   });
 
