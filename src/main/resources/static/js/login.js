@@ -56,14 +56,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
 
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlRole = urlParams.get('role');
+      let expectedRole = 'STUDENT';
+      if (urlRole === 'teacher') expectedRole = 'TEACHER';
+      else if (urlRole === 'admin') expectedRole = 'ADMIN';
+
       const response = await fetch('/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          email: email,        // ✔ CORREGIDO
-          password: password   // ✔ CORREGIDO
+          email: email,
+          password: password,
+          expectedRole: expectedRole
         })
       });
 
