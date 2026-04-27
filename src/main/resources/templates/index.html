@@ -3,56 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Midaxus &mdash; Gestión Inteligente de Horarios</title>
-    <link rel="stylesheet" href="/css/styles.css">
-    <link rel="stylesheet" href="/css/landing.css">
+    <title>Midaxus &mdash; Sistema de Gestión Académica</title>
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body { background-color: #e0f7fa; } /* Soft cyan background */
+    </style>
 </head>
-<body>
-    <header class="site-header">
-        <div class="container">
-            <a href="/" class="logo-text">
-                <img src="/img/midaxus -imgfont.png" alt="Logo Midaxus" class="font" height="80px" width="200px">
-            </a>
-            <nav class="main-nav">
-                <a href="/login" class="btn btn-outline">Iniciar sesión</a>
-                <a href="/register" class="btn btn-primary">Registrarse</a>
-            </nav>
-        </div>
-    </header>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
 
-    <section class="hero">
-        <div class="container">
-            <h1>Organiza tu tiempo, potencia tu productividad.</h1>
-            <p>Midaxus es una plataforma inteligente de gestión y planificación diseñada
-               para optimizar tu agenda y ayudarte a enfocarte en lo que realmente importa.</p>
-            <a href="/login" class="btn btn-cta">Comenzar</a>
+    <!-- Header Logo -->
+    <div class="text-center mb-10 mt-10">
+        <div class="flex justify-center mb-4">
+            <img src="/img/midaxus_icon.png" alt="Logo Midaxus" class="h-20 w-auto bg-white/50 p-3 rounded-2xl shadow-sm" />
         </div>
-    </section>
+        <h1 class="text-4xl font-bold text-gray-800 mb-2">midaxus</h1>
+        <p class="text-gray-600">Sistema de Gestión Académica - Consulta tus horarios de forma rápida y sencilla</p>
+    </div>
 
-    <section class="features container">
-        <div class="feature">
-            <h3>Planifica con facilidad</h3>
-            <p>Crea horarios que se adapten a tu estilo de vida y mantente en el camino correcto.</p>
-        </div>
-        <div class="feature">
-            <h3>Coordina sin esfuerzo</h3>
-            <p>Comparte tu disponibilidad y colabora sin idas y vueltas innecesarias.</p>
-        </div>
-        <div class="feature">
-            <h3>Gestiona tareas inteligentemente</h3>
-            <p>Deja que Midaxus priorice tus pendientes para que puedas enfocarte en la ejecución.</p>
-        </div>
-    </section>
+    <!-- Cards Container -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl w-full">
 
-    <footer class="site-footer">
-        <div class="container">
-            <p>&copy; 2026 Midaxus. Universidad El Bosque. Proyecto Núcleo 2.</p>
-            <nav class="footer-nav">
-               
-            </nav>
+        <!-- Estudiantes Card -->
+        <div class="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center text-center transition-transform hover:-translate-y-1">
+            <div class="bg-blue-100 text-blue-600 p-4 rounded-full w-20 h-20 flex items-center justify-center mb-6">
+                <i class="fas fa-user-graduate text-3xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-3">Estudiantes</h2>
+            <p class="text-gray-500 mb-6 flex-grow">Accede a tu horario de clases, consulta tus asignaturas y profesores</p>
+            <a href="/login?role=student" class="text-blue-600 font-semibold hover:text-blue-800">Iniciar sesión &rarr;</a>
         </div>
-    </footer>
 
-    <script src="/js/script.js"></script>
+        <!-- Profesores Card -->
+        <div class="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center text-center transition-transform hover:-translate-y-1">
+            <div class="bg-indigo-100 text-indigo-600 p-4 rounded-full w-20 h-20 flex items-center justify-center mb-6">
+                <i class="fas fa-chalkboard-teacher text-3xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-3">Profesores</h2>
+            <p class="text-gray-500 mb-6 flex-grow">Revisa tu carga académica, horarios de clases y grupos asignados</p>
+            <a href="/login?role=teacher" class="text-indigo-600 font-semibold hover:text-indigo-800">Iniciar sesión &rarr;</a>
+        </div>
+
+        <!-- Administrador Card -->
+        <div class="bg-white rounded-xl shadow-lg p-8 flex flex-col items-center text-center transition-transform hover:-translate-y-1">
+            <div class="bg-red-100 text-red-600 p-4 rounded-full w-20 h-20 flex items-center justify-center mb-6">
+                <i class="fas fa-shield-alt text-3xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-3">Administrador</h2>
+            <p class="text-gray-500 mb-6 flex-grow">Gestiona usuarios, horarios, materias y configuración del sistema</p>
+            <a href="/login?role=admin" class="text-red-600 font-semibold hover:text-red-800">Iniciar sesión &rarr;</a>
+        </div>
+
+    </div>
+
 </body>
 </html>

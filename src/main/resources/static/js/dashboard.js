@@ -6,24 +6,29 @@
 const ROLES = {
   ADMIN: {
     badge: "ADMIN",
+    roleTitle: "Administrador General",
+    icon: "🛡️",
+    theme: "from-red-600 to-red-700",
     menu: [
       { id:"dashboard",   icon:"fas fa-tachometer-alt",  label:"Dashboard"   },
       { id:"schedule",    icon:"fas fa-calendar-check",  label:"Schedule"    },
-      { id:"courses",     icon:"fas fa-book",            label:"Courses"     },
-      { id:"teachers",    icon:"fas fa-chalkboard-user", label:"Faculty"     },
+      { id:"courses",     icon:"fas fa-book",            label:"Gestión de Salones y Clases", desc:"Admin de Salones y Clases", emoji:"🏫" },
+      { id:"teachers",    icon:"fas fa-chalkboard-user", label:"Gestión de Usuarios", desc:"Administrar estudiantes y profesores", emoji:"👥" },
       { id:"publication", icon:"fas fa-paper-plane",     label:"Publish"     },
       { id:"settings",    icon:"fas fa-cog",             label:"Settings"    }
     ],
     kpis: [
-      { label:"Active Courses",    value:"42",  icon:"fas fa-book"      },
-      { label:"Scheduled Classes", value:"128", icon:"fas fa-calendar"  },
-      { label:"Faculty Members",   value:"65",  icon:"fas fa-users"     },
-      { label:"Classrooms",        value:"28",  icon:"fas fa-door-open" }
+      { label:"Estudiantes Activos", value:"1,245", icon:"🎓", bg:"bg-blue-100" },
+      { label:"Profesores",          value:"87",    icon:"👨‍🏫", bg:"bg-indigo-100" },
+      { label:"Materias",            value:"156",   icon:"📄", bg:"bg-green-100" },
+      { label:"Aulas",               value:"42",    icon:"🏫", bg:"bg-orange-100" }
     ],
     quickActions: [
-      { label:"Generate Schedule", icon:"fas fa-magic",        fn: ()=>toast("Schedule generation started…","info")    },
-      { label:"Validate All",      icon:"fas fa-check-double", fn: ()=>toast("All schedules validated ✓","success")    },
-      { label:"Export PDF",        icon:"fas fa-file-pdf",     fn: ()=>toast("Exporting PDF…","info")                  }
+      { label:"Gestión de Usuarios", desc:"Administrar estudiantes y profesores", emoji:"👥", fn: ()=>navigateTo("teachers") },
+      { label:"Gestión de Materias", desc:"Catálogo de materias", emoji:"📚", fn: ()=>navigateTo("subjects") },
+      { label:"Gestión de Sesiones", desc:"Admin de Salones y Clases", emoji:"🏫", fn: ()=>navigateTo("courses") },
+      { label:"Diseñador de Horarios", desc:"Generar o editar horario manual", emoji:"✨", fn: ()=>navigateTo("schedule") },
+      { label:"Configuración", desc:"Límites de Jornada y Almuerzo", emoji:"⚙️", fn: ()=>navigateTo("settings") }
     ],
     showConflictAlert: true,
     scheduleEditable: true
@@ -31,6 +36,9 @@ const ROLES = {
 
   TEACHER: {
     badge: "TEACHER",
+    roleTitle: "Profesor",
+    icon: "👨‍🏫",
+    theme: "from-indigo-600 to-indigo-700",
     menu: [
       { id:"dashboard",    icon:"fas fa-tachometer-alt", label:"Dashboard"     },
       { id:"schedule",     icon:"fas fa-calendar-check", label:"Full Schedule" },
@@ -40,12 +48,13 @@ const ROLES = {
     kpis: [
       { label:"My Courses",   value:"2",   icon:"fas fa-book"         },
       { label:"Weekly Hours", value:"12",  icon:"fas fa-clock"        },
-      { label:"My Groups",    value:"2",   icon:"fas fa-users"        },
-      { label:"Next Class",   value:"Mon", icon:"fas fa-calendar-day" }
+      { label:"My Groups",    value:"2",   icon:"fas fa-users"        }
     ],
     quickActions: [
-      { label:"My Schedule",     icon:"fas fa-calendar", fn: ()=>navigateTo("my-schedule")  },
-      { label:"Set Availability", icon:"fas fa-clock",   fn: ()=>navigateTo("availability") }
+      { label:"Registrar Asistencia", desc:"Gestionar asistencias", emoji:"✏️", fn: ()=>toast("Módulo en construcción", "info") },
+      { label:"Calificar", desc:"Ingresar notas", emoji:"📊", fn: ()=>navigateTo("grades") },
+      { label:"Material Didáctico", desc:"Subir recursos", emoji:"📚", fn: ()=>toast("Módulo en construcción", "info") },
+      { label:"Configuración", desc:"Ajustes de perfil", emoji:"⚙️", fn: ()=>toast("Módulo en construcción", "info") }
     ],
     showConflictAlert: false,
     scheduleEditable: false
@@ -53,19 +62,19 @@ const ROLES = {
 
   STUDENT: {
     badge: "STUDENT",
+    roleTitle: "Estudiante",
+    icon: "🎓",
+    theme: "from-blue-600 to-blue-700",
     menu: [
       { id:"dashboard", icon:"fas fa-tachometer-alt", label:"Dashboard" },
       { id:"schedule",  icon:"fas fa-calendar-check", label:"Schedule"  },
       { id:"grades",    icon:"fas fa-star-half-alt",  label:"My Grades" }
     ],
-    kpis: [
-      { label:"Enrolled",     value:"3",   icon:"fas fa-book"           },
-      { label:"Classes/Week", value:"8",   icon:"fas fa-calendar"       },
-      { label:"Credits",      value:"12",  icon:"fas fa-graduation-cap" },
-      { label:"GPA",          value:"3.9", icon:"fas fa-chart-line"     }
-    ],
+    kpis: [],
     quickActions: [
-      { label:"My Grades", icon:"fas fa-star", fn: ()=>navigateTo("grades") }
+      { label:"Ver Calificaciones", desc:"Consulta tus notas", emoji:"📄", fn: ()=>navigateTo("grades") },
+      { label:"Calendario Académico", desc:"Fechas importantes", emoji:"📅", fn: ()=>navigateTo("schedule") },
+      { label:"Notificaciones", desc:"Avisos y mensajes", emoji:"🔔", fn: ()=>toast("No tienes notificaciones", "info") }
     ],
     showConflictAlert: false,
     scheduleEditable: false,
@@ -128,12 +137,17 @@ if (!cfg) {
   console.error("Rol no reconocido:", session.role);
   window.location.href = "/login";
 }
-  // Navbar
-  document.getElementById("user-initials").textContent = session.initials || session.role[0];
-  document.getElementById("user-name").textContent     = session.name || session.email;
-  const rb = document.getElementById("role-badge");
-  rb.textContent = cfg.badge;
-  rb.className   = "role-badge " + cfg.badge;
+  // Llenar el perfil en el Banner y Header
+  document.getElementById("user-name").textContent = session.name || session.email;
+  
+  const roleSubtitle = document.getElementById("role-subtitle");
+  if(roleSubtitle) roleSubtitle.textContent = cfg.roleTitle || cfg.badge;
+  
+  const profileIcon = document.getElementById("profile-icon");
+  if(profileIcon) profileIcon.textContent = cfg.icon || "👤";
+  
+  const banner = document.getElementById("profile-banner");
+  if(banner) banner.className = `text-white rounded-lg shadow-md p-6 mb-6 bg-gradient-to-r ${cfg.theme || 'from-gray-600 to-gray-700'}`;
 
   document.getElementById("btn-logout").addEventListener("click", () => {
     if (typeof clearSession === "function") clearSession();
@@ -141,12 +155,9 @@ if (!cfg) {
     window.location.href = "/login";
   });
 
-  buildSidebar(cfg.menu);
+  buildSidebar(cfg.menu); // Mantenido para compatibilidad o sub-navegación si aplica
   buildKPIs(cfg.kpis);
   buildQuickActions(cfg.quickActions);
-
-  const ca = document.getElementById("conflict-alert");
-  if (ca) ca.style.display = cfg.showConflictAlert ? "flex" : "none";
 
   const sc = document.getElementById("student-courses");
   if (sc) sc.style.display = cfg.showStudentCourses ? "block" : "none";
@@ -171,50 +182,542 @@ function navigateTo(id) {
   document.querySelectorAll("#sidebar-menu li").forEach(li => li.classList.toggle("active", li.dataset.id===id));
 
   if (id === "schedule") {
-    const session = (typeof getSession==="function" ? getSession() : null) || demoSession();
-    const editable = ROLES[session.role]?.scheduleEditable || false;
+    const sessionObj = (typeof getSession==="function" ? getSession() : null) || demoSession();
+    const editable = ROLES[sessionObj.role]?.scheduleEditable || false;
     buildScheduleUI(editable);
     buildScheduleGrid(editable);
   }
+  
+  if (id === "courses" && session.role === "ADMIN") {
+    loadAdminCourses();
+  }
+  
+  if (id === "subjects" && session.role === "ADMIN") {
+    loadAdminSubjects();
+  }
+  
+  if (id === "settings" && session.role === "ADMIN") {
+    loadInstitutionPolicies();
+  }
+  
+  if (id === "dashboard" && session.role === "STUDENT") {
+    loadStudentCourses();
+  }
+  
   window.scrollTo(0,0);
 }
+
+// ─── Institution Policies (HU-5) ──────────────────────────────────────────────
+async function loadInstitutionPolicies() {
+  try {
+    const res = await fetch('/api/policies', {
+      headers: { 'Authorization': 'Bearer ' + rawAuth?.token }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if(data.classStartTime) document.getElementById('policy-class-start').value = data.classStartTime.substring(0,5);
+      if(data.classEndTime) document.getElementById('policy-class-end').value = data.classEndTime.substring(0,5);
+      if(data.lunchStartTime) document.getElementById('policy-lunch-start').value = data.lunchStartTime.substring(0,5);
+      if(data.lunchEndTime) document.getElementById('policy-lunch-end').value = data.lunchEndTime.substring(0,5);
+      
+      if(data.standardCapacity) document.getElementById('policy-standard-capacity').value = data.standardCapacity;
+      if(data.capacityTolerancePercent !== undefined) document.getElementById('policy-capacity-tolerance').value = data.capacityTolerancePercent;
+      if(data.maxSessionsPerWeek !== undefined) document.getElementById('policy-max-sessions').value = data.maxSessionsPerWeek;
+    }
+  } catch (err) {
+    console.error("Error loading policies", err);
+  }
+}
+
+async function saveInstitutionPolicies() {
+  const classStart = document.getElementById('policy-class-start').value;
+  const classEnd = document.getElementById('policy-class-end').value;
+  const lunchStart = document.getElementById('policy-lunch-start').value;
+  const lunchEnd = document.getElementById('policy-lunch-end').value;
+  
+  const standardCap = document.getElementById('policy-standard-capacity').value;
+  const capTolerance = document.getElementById('policy-capacity-tolerance').value;
+  const maxSessions = document.getElementById('policy-max-sessions').value;
+
+  const payload = {
+    classStartTime: classStart ? classStart + ":00" : null,
+    classEndTime: classEnd ? classEnd + ":00" : null,
+    lunchStartTime: lunchStart ? lunchStart + ":00" : null,
+    lunchEndTime: lunchEnd ? lunchEnd + ":00" : null,
+    standardCapacity: standardCap ? parseInt(standardCap) : null,
+    capacityTolerancePercent: capTolerance ? parseInt(capTolerance) : null,
+    maxSessionsPerWeek: maxSessions ? parseInt(maxSessions) : null
+  };
+
+  try {
+    const res = await fetch('/api/policies', {
+      method: 'PUT',
+      headers: { 
+        'Authorization': 'Bearer ' + rawAuth?.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) {
+      toast("Configuración guardada correctamente", "success");
+    } else {
+      toast("Error al guardar configuración", "error");
+    }
+  } catch (err) {
+    console.error("Error saving policies", err);
+    toast("Error de red", "error");
+  }
+}
+
+// ─── Admin Subjects (HU-15) ───────────────────────────────────────────────────
+async function loadAdminSubjects() {
+  try {
+    const res = await fetch('/api/subjects', { headers: { 'Authorization': 'Bearer ' + rawAuth?.token } });
+    if (res.ok) {
+      const subjects = await res.json();
+      const tbody = document.getElementById("admin-subjects-table-body");
+      tbody.innerHTML = "";
+      
+      subjects.forEach(subj => {
+        tbody.innerHTML += `
+          <tr class="hover:bg-gray-50">
+            <td class="p-3 border-b font-mono text-sm">${subj.idSubject}</td>
+            <td class="p-3 border-b font-medium text-gray-800">${subj.subjectName}</td>
+            <td class="p-3 border-b text-center"><span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">${subj.sessionPerWeek}</span></td>
+            <td class="p-3 border-b text-gray-600">${subj.durationMinutes} min</td>
+          </tr>
+        `;
+      });
+    }
+  } catch (e) {
+    console.error("Error loading subjects", e);
+  }
+}
+
+function openCreateSubjectModal() {
+  document.getElementById("create-subject-id").value = "";
+  document.getElementById("create-subject-name").value = "";
+  document.getElementById("create-subject-sessions").value = "2";
+  document.getElementById("modal-create-subject").style.display = "flex";
+}
+
+function closeCreateSubjectModal() {
+  document.getElementById("modal-create-subject").style.display = "none";
+}
+
+async function createSubject() {
+  const idSubject = document.getElementById("create-subject-id").value.trim().toUpperCase();
+  const subjectName = document.getElementById("create-subject-name").value.trim();
+  const sessionPerWeek = parseInt(document.getElementById("create-subject-sessions").value);
+  
+  if (!idSubject || !subjectName) {
+    toast("El código y el nombre son obligatorios", "error");
+    return;
+  }
+  if (sessionPerWeek < 1 || sessionPerWeek > 4) {
+    toast("Las sesiones deben ser entre 1 y 4", "error");
+    return;
+  }
+  
+  const payload = {
+    idSubject,
+    subjectName,
+    sessionPerWeek,
+    durationMinutes: 120 // Regla de negocio fija
+  };
+  
+  try {
+    const res = await fetch('/api/subjects', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + rawAuth?.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    
+    if (res.ok) {
+      toast("Materia creada correctamente", "success");
+      closeCreateSubjectModal();
+      loadAdminSubjects();
+    } else {
+      const data = await res.json().catch(()=>null);
+      toast(data?.message || "Error al crear la materia", "error");
+    }
+  } catch (e) {
+    console.error(e);
+    toast("Error de red", "error");
+  }
+}
+
+// ─── Admin Teachers (HU-6) ────────────────────────────────────────────────────
+let allSubjectsCache = [];
+
+async function loadAdminTeachers() {
+  try {
+    const res = await fetch('/api/teachers', { headers: { 'Authorization': 'Bearer ' + rawAuth?.token } });
+    if (res.ok) {
+      const teachers = await res.json();
+      const tbody = document.getElementById("admin-teachers-table-body");
+      if(!tbody) return;
+      tbody.innerHTML = "";
+      
+      teachers.forEach(t => {
+        const comps = t.subjectsIds ? t.subjectsIds.length : 0;
+        tbody.innerHTML += `
+          <tr class="hover:bg-gray-50">
+            <td class="p-3 border-b font-mono text-sm">${t.teacherCode}</td>
+            <td class="p-3 border-b font-medium text-gray-800">${t.firstName} ${t.lastName}</td>
+            <td class="p-3 border-b"><span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">${comps} materias</span></td>
+            <td class="p-3 border-b">
+              <button class="text-purple-600 hover:text-purple-800" onclick="openTeacherDetailsModal('${t.teacherCode}', '${t.firstName} ${t.lastName}')">
+                <i class="fas fa-edit"></i> Editar Perfil
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+  } catch(e) { console.error(e); }
+}
+
+async function openTeacherDetailsModal(teacherCode, teacherName) {
+  document.getElementById("edit-teacher-id").value = teacherCode;
+  document.getElementById("edit-teacher-name").innerText = teacherName;
+  
+  document.getElementById("teacher-availability-list").innerHTML = "";
+  document.getElementById("teacher-competences-list").innerHTML = "<p class='text-sm text-gray-500'>Cargando...</p>";
+  
+  document.getElementById("modal-teacher-details").style.display = "flex";
+  
+  try {
+    if (allSubjectsCache.length === 0) {
+      const sRes = await fetch('/api/subjects', { headers: { 'Authorization': 'Bearer ' + rawAuth?.token } });
+      if (sRes.ok) allSubjectsCache = await sRes.json();
+    }
+    
+    const tRes = await fetch('/api/teachers', { headers: { 'Authorization': 'Bearer ' + rawAuth?.token } });
+    let teacher = null;
+    if (tRes.ok) {
+      const teachers = await tRes.json();
+      teacher = teachers.find(t => t.teacherCode === teacherCode);
+    }
+    
+    if (!teacher) return;
+    
+    // Render Competences (Checkboxes)
+    const compBox = document.getElementById("teacher-competences-list");
+    compBox.innerHTML = "";
+    allSubjectsCache.forEach(subj => {
+      const isChecked = teacher.subjectsIds && teacher.subjectsIds.includes(subj.idSubject) ? "checked" : "";
+      compBox.innerHTML += `
+        <label class="flex items-center gap-2 text-sm bg-white p-2 border rounded cursor-pointer hover:bg-gray-50">
+          <input type="checkbox" class="subj-checkbox" value="${subj.idSubject}" ${isChecked}>
+          <span class="font-mono text-xs text-gray-500">${subj.idSubject}</span> ${subj.subjectName}
+        </label>
+      `;
+    });
+    
+    // Render Availabilities
+    if (teacher.availabilities) {
+      teacher.availabilities.forEach(av => {
+        addTeacherAvailabilityRowDirect(av.dayOfWeek, av.startTime.substring(0,5), av.endTime.substring(0,5));
+      });
+    }
+    
+  } catch(e) { console.error(e); }
+}
+
+function closeTeacherDetailsModal() {
+  document.getElementById("modal-teacher-details").style.display = "none";
+}
+
+function addTeacherAvailabilityRow() {
+  const day = document.getElementById("new-avail-day").value;
+  const start = document.getElementById("new-avail-start").value;
+  const end = document.getElementById("new-avail-end").value;
+  
+  if(!start || !end) {
+    toast("Selecciona hora de inicio y fin", "error");
+    return;
+  }
+  if(start >= end) {
+    toast("La hora de inicio debe ser menor a la hora de fin", "error");
+    return;
+  }
+  
+  addTeacherAvailabilityRowDirect(day, start, end);
+}
+
+function addTeacherAvailabilityRowDirect(day, start, end) {
+  const ul = document.getElementById("teacher-availability-list");
+  const li = document.createElement("li");
+  li.className = "flex justify-between items-center bg-white p-2 border rounded text-sm avail-item";
+  li.innerHTML = `
+    <span class="font-medium text-gray-700 avail-day w-24">${day}</span>
+    <span class="text-gray-600 avail-time"><span class="avail-start">${start}</span> - <span class="avail-end">${end}</span></span>
+    <button type="button" class="text-red-500 hover:text-red-700" onclick="this.parentElement.remove()">
+      <i class="fas fa-trash"></i>
+    </button>
+  `;
+  ul.appendChild(li);
+}
+
+async function saveTeacherDetails() {
+  const teacherId = document.getElementById("edit-teacher-id").value;
+  
+  // Get checked subjects
+  const checkboxes = document.querySelectorAll(".subj-checkbox:checked");
+  const subjectsIds = Array.from(checkboxes).map(cb => cb.value);
+  
+  // Get availabilities
+  const availItems = document.querySelectorAll(".avail-item");
+  const availabilities = Array.from(availItems).map(item => {
+    return {
+      dayOfWeek: item.querySelector(".avail-day").innerText,
+      startTime: item.querySelector(".avail-start").innerText + ":00",
+      endTime: item.querySelector(".avail-end").innerText + ":00"
+    };
+  });
+  
+  const payload = {
+    subjectsIds,
+    availabilities
+  };
+  
+  try {
+    const res = await fetch('/api/teachers/' + teacherId, {
+      method: 'PUT',
+      headers: {
+        'Authorization': 'Bearer ' + rawAuth?.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    
+    if (res.ok) {
+      toast("Perfil docente actualizado", "success");
+      closeTeacherDetailsModal();
+      loadAdminTeachers();
+    } else {
+      toast("Error al actualizar perfil", "error");
+    }
+  } catch(e) {
+    console.error(e);
+    toast("Error de red", "error");
+  }
+}
+
+// ─── Student Courses (HU-13) ──────────────────────────────────────────────────
+async function loadStudentCourses() {
+  try {
+    const [coursesRes, teachersRes] = await Promise.all([
+      fetch('/api/course-groups', { headers: { 'Authorization': 'Bearer ' + rawAuth?.token } }),
+      fetch('/api/teachers', { headers: { 'Authorization': 'Bearer ' + rawAuth?.token } })
+    ]);
+    
+    let courses = [];
+    let teachers = [];
+    if (coursesRes.ok) courses = await coursesRes.json();
+    if (teachersRes.ok) teachers = await teachersRes.json();
+    
+    const tbody = document.getElementById("student-courses-table-body");
+    if (!tbody) return;
+    tbody.innerHTML = "";
+    
+    if (courses.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No hay sesiones disponibles.</td></tr>`;
+      return;
+    }
+    
+    courses.forEach(cg => {
+      const teacher = teachers.find(t => t.teacherId === cg.teacherId || t.teacherCode === cg.teacherId);
+      const teacherName = teacher ? teacher.name : (cg.teacherId || "Sin asignar");
+      const cuposDisp = cg.capacity > 0 ? cg.capacity : 0;
+      const status = cuposDisp > 0 ? '<span class="badge green">Disponible</span>' : '<span class="badge red">Lleno</span>';
+      
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${cg.code || "N/A"}</td>
+        <td>${cg.subjectId || "Materia"}</td>
+        <td>${teacherName}</td>
+        <td>${cuposDisp}</td>
+        <td>${status}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  } catch (err) {
+    console.error("Error loading student courses", err);
+  }
+}
+
+// ─── Admin Courses (HU-13) ───────────────────────────────────────────────────
+let adminCoursesData = [];
+let allTeachersData = [];
+
+async function loadAdminCourses() {
+  try {
+    const [coursesRes, teachersRes] = await Promise.all([
+      fetch('/api/course-groups', { headers: { 'Authorization': 'Bearer ' + rawAuth?.token } }),
+      fetch('/api/teachers', { headers: { 'Authorization': 'Bearer ' + rawAuth?.token } })
+    ]);
+    
+    if (coursesRes.ok) adminCoursesData = await coursesRes.json();
+    if (teachersRes.ok) allTeachersData = await teachersRes.json();
+    
+    renderAdminCourses();
+    populateTeacherSelect();
+  } catch (err) {
+    console.error("Error loading courses or teachers", err);
+    toast("Error cargando sesiones", "error");
+  }
+}
+
+function renderAdminCourses() {
+  const tbody = document.getElementById("admin-courses-table-body");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+  
+  if (adminCoursesData.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No hay sesiones registradas.</td></tr>`;
+    return;
+  }
+  
+  adminCoursesData.forEach(cg => {
+    // Buscar nombre del profesor para mostrar
+    const teacher = allTeachersData.find(t => t.teacherId === cg.teacherId || t.teacherCode === cg.teacherId);
+    const teacherName = teacher ? teacher.name : (cg.teacherId || "Sin asignar");
+    
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${cg.code || "N/A"}</td>
+      <td>${cg.subjectId || "Materia"}</td>
+      <td>${teacherName}</td>
+      <td>${cg.capacity || 0}</td>
+      <td>
+        <button class="btn-outline" onclick="openEditSessionModal('${cg.courseGroupId}')"><i class="fas fa-edit"></i> Asignar</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function populateTeacherSelect() {
+  const select = document.getElementById("edit-session-teacher");
+  if (!select) return;
+  
+  // Limpiar y dejar el default
+  select.innerHTML = '<option value="">Seleccione un profesor...</option>';
+  
+  allTeachersData.forEach(t => {
+    const opt = document.createElement("option");
+    opt.value = t.teacherId || t.teacherCode;
+    opt.textContent = t.name;
+    select.appendChild(opt);
+  });
+}
+
+function openEditSessionModal(courseGroupId) {
+  const cg = adminCoursesData.find(c => c.courseGroupId === courseGroupId);
+  if (!cg) return;
+  
+  document.getElementById("edit-session-id").value = cg.courseGroupId;
+  document.getElementById("edit-session-teacher").value = cg.teacherId || "";
+  document.getElementById("edit-session-capacity").value = cg.capacity || 30;
+  
+  document.getElementById("modal-edit-session").style.display = "flex";
+}
+
+function closeEditSessionModal() {
+  document.getElementById("modal-edit-session").style.display = "none";
+}
+
+async function saveSessionAssignment() {
+  const id = document.getElementById("edit-session-id").value;
+  const teacherId = document.getElementById("edit-session-teacher").value;
+  const capacity = document.getElementById("edit-session-capacity").value;
+  
+  if (!teacherId) {
+    toast("Debe seleccionar un profesor", "error");
+    return;
+  }
+  
+  const cg = adminCoursesData.find(c => c.courseGroupId === id);
+  if (!cg) return;
+  
+  // Actualizar el DTO
+  cg.teacherId = teacherId;
+  cg.capacity = parseInt(capacity, 10);
+  
+  try {
+    const res = await fetch('/api/course-groups/' + id, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + rawAuth?.token
+      },
+      body: JSON.stringify(cg)
+    });
+    
+    if (res.ok) {
+      toast("Sesión asignada correctamente", "success");
+      closeEditSessionModal();
+      loadAdminCourses(); // Refrescar la tabla
+    } else {
+      toast("Error al guardar la sesión", "error");
+    }
+  } catch(err) {
+    console.error(err);
+    toast("Error de red", "error");
+  }
+}
+
 window.navigateTo = navigateTo;
 
 // ─── Sidebar ──────────────────────────────────────────────────────────────────
 function buildSidebar(menu) {
-  const ul = document.getElementById("sidebar-menu");
-  ul.innerHTML = "";
-  menu.forEach(item => {
-    const li = document.createElement("li");
-    li.dataset.id = item.id;
-    li.innerHTML  = `<i class="${item.icon}"></i><span>${item.label}</span>`;
-    li.addEventListener("click", () => navigateTo(item.id));
-    ul.appendChild(li);
-  });
+  // Sidebar removida en favor del diseño de Tailwind (Header + Quick Actions Grid)
 }
 
 // ─── KPIs ─────────────────────────────────────────────────────────────────────
 function buildKPIs(kpis) {
   const g = document.getElementById("kpi-grid");
   if (!g) return;
-  const cols = kpis.length <= 2 ? 2 : kpis.length === 3 ? 3 : 4;
-  g.style.gridTemplateColumns = `repeat(${cols},1fr)`;
-  g.innerHTML = kpis.map(k=>`
-    <div class="kpi-card">
-      <span class="label"><i class="${k.icon}" style="margin-right:.3rem;color:var(--teal);"></i>${k.label}</span>
-      <div class="value">${k.value}</div>
+  
+  if (!kpis || kpis.length === 0) {
+    g.style.display = 'none';
+    return;
+  }
+  
+  g.style.display = 'grid';
+  g.innerHTML = kpis.map(k => `
+    <div class="bg-white rounded-xl shadow-md p-6 flex items-center gap-4 transition-transform hover:-translate-y-1">
+      <div class="${k.bg || 'bg-blue-100 text-blue-600'} p-4 rounded-full w-14 h-14 flex items-center justify-center text-2xl">
+        ${k.icon}
+      </div>
+      <div>
+        <p class="text-gray-500 text-sm font-medium">${k.label}</p>
+        <p class="text-2xl font-bold text-gray-800">${k.value}</p>
+      </div>
     </div>`).join("");
 }
 
-// ─── Quick Actions ────────────────────────────────────────────────────────────
+// ─── Quick Actions / Opciones Principales ─────────────────────────────────────
 function buildQuickActions(actions) {
   const box = document.getElementById("quick-actions-box");
   if (!box) return;
-  box.innerHTML = `<h3><i class="fas fa-bolt"></i> Quick Actions</h3>`;
+  box.innerHTML = "";
+  
   actions.forEach(a => {
     const btn = document.createElement("button");
-    btn.className = "btn-primary";
-    btn.innerHTML = `<i class="${a.icon}"></i> ${a.label}`;
+    btn.className = "bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl p-4 text-left transition-colors group";
+    btn.innerHTML = `
+      <div class="flex items-center gap-3 mb-2">
+        <span class="text-2xl">${a.emoji || '⚡'}</span>
+        <h4 class="font-bold text-gray-800 group-hover:text-blue-600 transition-colors">${a.label}</h4>
+      </div>
+      <p class="text-sm text-gray-500">${a.desc || ''}</p>
+    `;
     btn.addEventListener("click", a.fn);
     box.appendChild(btn);
   });
@@ -371,6 +874,49 @@ function cellDragOver(e) {
 }
 function cellDragLeave(e) { e.currentTarget.classList.remove("over","clash"); }
 
+function checkConsecutiveDays(courseCode, courseGroup, toDay, fromDay) {
+  const toIdx = DAYS.indexOf(toDay);
+  if (toIdx === -1) return true;
+  
+  let scheduledDays = [];
+  for (const slot in scheduleData) {
+    for (const d in scheduleData[slot]) {
+      if (d === fromDay) continue; // skip the origin if moving
+      
+      const s = scheduleData[slot][d];
+      if (s && s.code === courseCode && s.group === courseGroup) {
+        if (!scheduledDays.includes(d)) scheduledDays.push(d);
+      }
+    }
+  }
+  
+  const totalSessions = scheduledDays.length + 1;
+  
+  // HU-12: Policy only for 2 or 3 weekly sessions
+  if (totalSessions !== 2 && totalSessions !== 3) {
+    return true;
+  }
+  
+  let hasAdjacent = false;
+  for (const d of scheduledDays) {
+    const dIdx = DAYS.indexOf(d);
+    if (Math.abs(dIdx - toIdx) === 1) {
+      hasAdjacent = true;
+      break;
+    }
+  }
+  
+  if (hasAdjacent) {
+    const msg = `Asignación en días consecutivos detectada para ${courseCode} (${courseGroup}).\n\nPara un aprendizaje óptimo, la política institucional sugiere alternar días para cursos de 2 o 3 sesiones semanales.\n\n¿Deseas registrar la excepción y agendar de todos modos?`;
+    if(!confirm(msg)) {
+      toast("Asignación cancelada. Selecciona un día alternativo.", "info");
+      return false;
+    }
+  }
+  
+  return true;
+}
+
 function cellDrop(e) {
   e.preventDefault();
   const cell = e.currentTarget;
@@ -382,6 +928,10 @@ function cellDrop(e) {
     if (fromSlot===toSlot && fromDay===toDay) { dragSrc=null; return; }
     const s = scheduleData[fromSlot]?.[fromDay];
     if (!s) { dragSrc=null; return; }
+    
+    // HU-12: Validate consecutive days
+    if (!checkConsecutiveDays(s.code, s.group, toDay, fromDay)) { dragSrc=null; return; }
+    
     const existing = scheduleData[toSlot]?.[toDay];
     if (!scheduleData[toSlot]) scheduleData[toSlot] = {};
     scheduleData[toSlot][toDay] = s;
@@ -393,6 +943,10 @@ function cellDrop(e) {
     const item = pool[dragSrc.idx];
     if (!item) { dragSrc=null; return; }
     if (scheduleData[toSlot]?.[toDay]) { toast("That cell is occupied","error"); dragSrc=null; return; }
+    
+    // HU-12: Validate consecutive days (no fromDay)
+    if (!checkConsecutiveDays(item.code, item.group, toDay, null)) { dragSrc=null; return; }
+    
     if (!scheduleData[toSlot]) scheduleData[toSlot] = {};
     scheduleData[toSlot][toDay] = { ...item };
     pool.splice(dragSrc.idx, 1);

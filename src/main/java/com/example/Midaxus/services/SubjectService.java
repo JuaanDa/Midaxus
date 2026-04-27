@@ -4,6 +4,8 @@ import com.example.Midaxus.model.dtos.SubjectDTO;
 import com.example.Midaxus.model.entities.Subject;
 import com.example.Midaxus.model.mapper.SubjectMapper;
 import com.example.Midaxus.repositories.SubjectRepository;
+import com.example.Midaxus.model.entities.InstitutionPolicy;
+import com.example.Midaxus.repository.InstitutionPolicyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,14 +16,24 @@ public class SubjectService implements ISubject<SubjectDTO, String> {
 
     @Autowired
     private SubjectRepository subjectRepository;
+    @Autowired
+    private InstitutionPolicyRepository policyRepository;
 
     // 🔹 CREATE
     @Override
     public SubjectDTO create(SubjectDTO subjectDTO) {
 
-        // 🔥 VALIDACIÓN RF-04
-        if (subjectDTO.getSessionPerWeek() < 1 || subjectDTO.getSessionPerWeek() > 4) {
-            throw new RuntimeException("Sesiones por semana inválidas (1-4)");
+        InstitutionPolicy policy = policyRepository.findById(1L).orElseGet(() -> {
+            InstitutionPolicy p = new InstitutionPolicy();
+            p.setMaxSessionsPerWeek(4);
+            return p;
+        });
+
+        // 🔥 VALIDACIÓN HU-11: Rango de sesiones parametrizado
+        int maxSessions = policy.getMaxSessionsPerWeek() != null ? policy.getMaxSessionsPerWeek() : 4;
+        
+        if (subjectDTO.getSessionPerWeek() < 1 || subjectDTO.getSessionPerWeek() > maxSessions) {
+            throw new RuntimeException("Sesiones por semana inválidas (1-" + maxSessions + ")");
         }
 
         if (subjectDTO.getDurationMinutes() != 120) {

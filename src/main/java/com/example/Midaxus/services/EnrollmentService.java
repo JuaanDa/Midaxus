@@ -8,6 +8,8 @@ import com.example.Midaxus.model.enums.EnrollmentStatus;
 import com.example.Midaxus.model.mapper.EnrollmentMapper;
 import com.example.Midaxus.repositories.CourseGroupRepository;
 import com.example.Midaxus.repositories.EnrollmentRepository;
+import com.example.Midaxus.model.entities.InstitutionPolicy;
+import com.example.Midaxus.repository.InstitutionPolicyRepository;
 import com.example.Midaxus.repositories.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,9 @@ public class EnrollmentService implements IEnrollment<EnrollmentDTO, String> {
     @Autowired
     private CourseGroupRepository courseGroupRepository;
 
+    @Autowired
+    private InstitutionPolicyRepository policyRepository;
+
     @Override
     public EnrollmentDTO createEnrollment(EnrollmentDTO dto) {
 
@@ -43,10 +48,17 @@ public class EnrollmentService implements IEnrollment<EnrollmentDTO, String> {
             throw new RuntimeException("Ya estás inscrito en este curso");
         }
 
-        //  capacidad (RF-07 con tolerancia 10%)
+        InstitutionPolicy policy = policyRepository.findById(1L).orElseGet(() -> {
+            InstitutionPolicy p = new InstitutionPolicy();
+            p.setStandardCapacity(40);
+            p.setCapacityTolerancePercent(10);
+            return p;
+        });
+
+        //  capacidad (HU-14: control de aforo por grupo con un estándar y tolerancia)
         int current = enrollmentRepository.getAllByCourseGroup(courseGroup).size();
-        int capacity = courseGroup.getCapacity();
-        int maxAllowed = (int) (capacity * 1.1);
+        int baseCapacity = courseGroup.getCapacity() > 0 ? courseGroup.getCapacity() : policy.getStandardCapacity();
+        int maxAllowed = baseCapacity + (baseCapacity * policy.getCapacityTolerancePercent() / 100);
 
         if (current >= maxAllowed) {
             throw new RuntimeException("Curso lleno (aforo máximo alcanzado)");

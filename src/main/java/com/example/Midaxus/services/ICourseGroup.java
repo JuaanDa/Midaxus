@@ -7,6 +7,7 @@ public interface ICourseGroup<T, K> {
 
     T create(T dto);
 
+    T update(K id, T dto);
 
     T getById(K id);
 

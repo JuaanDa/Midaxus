@@ -59,6 +59,32 @@ public class CourseGroupService implements ICourseGroup<CourseGroupDTO, String> 
         return CourseGroupMapper.toDTO(saved);
     }
 
+    @Override
+    public CourseGroupDTO update(String id, CourseGroupDTO dto) {
+        if (dto == null) throw new RuntimeException("Datos inválidos");
+
+        CourseGroup existing = courseGroupRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("CourseGroup no encontrado"));
+
+        Teacher teacher = teacherRepository.findByTeacherCode(dto.getTeacherId())
+                .orElseThrow(() -> new RuntimeException("Teacher no encontrado"));
+
+        Subject subject = subjectRepository.findById(dto.getSubjectId())
+                .orElseThrow(() -> new RuntimeException("Subject no encontrado"));
+
+        AcademicPeriod period = academicPeriodRepository.findById(dto.getAcademicPeriodId())
+                .orElseThrow(() -> new RuntimeException("Periodo no encontrado"));
+
+        existing.setTeacher(teacher);
+        existing.setSubject(subject);
+        existing.setAcademicPeriod(period);
+        existing.setCapacity(dto.getCapacity());
+        existing.setCode(dto.getCode());
+
+        CourseGroup updated = courseGroupRepository.save(existing);
+        return CourseGroupMapper.toDTO(updated);
+    }
+
 
     @Override
     public CourseGroupDTO getById(String id) {

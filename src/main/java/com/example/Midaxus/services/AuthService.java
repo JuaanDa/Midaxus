@@ -64,6 +64,14 @@ public class AuthService {
             return new LoginResponseDTO(false, "Tipo de usuario desconocido", null, null, null);
         }
 
+        if (login.getExpectedRole() != null && !login.getExpectedRole().trim().isEmpty()) {
+            if (!role.equalsIgnoreCase(login.getExpectedRole())) {
+                String roleName = login.getExpectedRole().equalsIgnoreCase("TEACHER") ? "Profesor" : 
+                                  (login.getExpectedRole().equalsIgnoreCase("ADMIN") ? "Administrador" : "Estudiante");
+                return new LoginResponseDTO(false, "Credenciales no válidas para el panel de " + roleName, null, null, null);
+            }
+        }
+
         String token = jwtUtil.generateToken(user.getEmail(), role, user.getEmail(), user.getFirstName());
 
         return new LoginResponseDTO(true, "Login exitoso", role, token, dto);

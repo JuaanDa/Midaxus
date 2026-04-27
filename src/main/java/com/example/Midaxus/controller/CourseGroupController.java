@@ -27,6 +27,13 @@ public class CourseGroupController {
                 .body(created);
     }
 
+    //  UPDATE
+    @PutMapping("/{id}")
+    public ResponseEntity<CourseGroupDTO> update(@PathVariable String id, @RequestBody CourseGroupDTO dto) {
+        CourseGroupDTO updated = service.update(id, dto);
+        return ResponseEntity.ok(updated);
+    }
+
     //  GET BY ID
     @GetMapping("/{id}")
     public ResponseEntity<CourseGroupDTO> getById(@PathVariable String id) {

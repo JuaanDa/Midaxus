@@ -3,6 +3,7 @@ package com.example.Midaxus.model.dtos.auth;
 public class LoginRequestDTO {
     private String email;
     private String password;
+    private String expectedRole;
 
     public String getEmail() {
         return email;
@@ -18,5 +19,13 @@ public class LoginRequestDTO {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getExpectedRole() {
+        return expectedRole;
+    }
+
+    public void setExpectedRole(String expectedRole) {
+        this.expectedRole = expectedRole;
     }
 }

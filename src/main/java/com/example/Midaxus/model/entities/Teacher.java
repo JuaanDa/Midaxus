@@ -21,6 +21,17 @@ public class Teacher extends User {
     @OneToMany(mappedBy = "teacher")
     private List<CourseGroup> courseGroups;
 
+    @ManyToMany
+    @JoinTable(
+        name = "teacher_subjects",
+        joinColumns = @JoinColumn(name = "teacher_id"),
+        inverseJoinColumns = @JoinColumn(name = "subject_id")
+    )
+    private List<Subject> habilitatedSubjects;
+
+    @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TeacherAvailability> availabilities;
+
 
 
     public Teacher() {}
@@ -57,5 +68,21 @@ public class Teacher extends User {
 
     public void setStartDate(Date startDate) {
         this.startDate = startDate;
+    }
+
+    public List<Subject> getHabilitatedSubjects() {
+        return habilitatedSubjects;
+    }
+
+    public void setHabilitatedSubjects(List<Subject> habilitatedSubjects) {
+        this.habilitatedSubjects = habilitatedSubjects;
+    }
+
+    public List<TeacherAvailability> getAvailabilities() {
+        return availabilities;
+    }
+
+    public void setAvailabilities(List<TeacherAvailability> availabilities) {
+        this.availabilities = availabilities;
     }
 }
