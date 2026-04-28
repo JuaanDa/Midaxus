@@ -99,4 +99,9 @@ public class CourseGroup {
     public void setEnrollments(List<Enrollment> enrollments) {
         this.enrollments = enrollments;
     }
+
+    @Override
+    public String toString() {
+        return code; // o el atributo que identifique el curso
+    }
 }

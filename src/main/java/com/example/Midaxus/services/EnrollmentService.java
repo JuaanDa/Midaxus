@@ -9,7 +9,7 @@ import com.example.Midaxus.model.mapper.EnrollmentMapper;
 import com.example.Midaxus.repositories.CourseGroupRepository;
 import com.example.Midaxus.repositories.EnrollmentRepository;
 import com.example.Midaxus.model.entities.InstitutionPolicy;
-import com.example.Midaxus.repository.InstitutionPolicyRepository;
+import com.example.Midaxus.repositories.InstitutionPolicyRepository;
 import com.example.Midaxus.repositories.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
