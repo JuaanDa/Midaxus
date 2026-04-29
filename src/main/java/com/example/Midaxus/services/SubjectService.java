@@ -5,7 +5,7 @@ import com.example.Midaxus.model.entities.Subject;
 import com.example.Midaxus.model.mapper.SubjectMapper;
 import com.example.Midaxus.repositories.SubjectRepository;
 import com.example.Midaxus.model.entities.InstitutionPolicy;
-import com.example.Midaxus.repository.InstitutionPolicyRepository;
+import com.example.Midaxus.repositories.InstitutionPolicyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

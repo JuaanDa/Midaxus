@@ -2,7 +2,7 @@ package com.example.Midaxus.services;
 
 import com.example.Midaxus.model.dtos.InstitutionPolicyDTO;
 import com.example.Midaxus.model.entities.InstitutionPolicy;
-import com.example.Midaxus.repository.InstitutionPolicyRepository;
+import com.example.Midaxus.repositories.InstitutionPolicyRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
