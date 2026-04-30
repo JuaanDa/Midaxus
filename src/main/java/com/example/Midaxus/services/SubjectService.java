@@ -25,12 +25,12 @@ public class SubjectService implements ISubject<SubjectDTO, String> {
 
         InstitutionPolicy policy = policyRepository.findById(1L).orElseGet(() -> {
             InstitutionPolicy p = new InstitutionPolicy();
-            p.setMaxSessionsPerWeek(4);
+            p.setMaxSessionsPerWeek(3);
             return p;
         });
 
         // 🔥 VALIDACIÓN HU-11: Rango de sesiones parametrizado
-        int maxSessions = policy.getMaxSessionsPerWeek() != null ? policy.getMaxSessionsPerWeek() : 4;
+        int maxSessions = policy.getMaxSessionsPerWeek() != null ? policy.getMaxSessionsPerWeek() : 3;
         
         if (subjectDTO.getSessionPerWeek() < 1 || subjectDTO.getSessionPerWeek() > maxSessions) {
             throw new RuntimeException("Sesiones por semana inválidas (1-" + maxSessions + ")");
@@ -47,6 +47,31 @@ public class SubjectService implements ISubject<SubjectDTO, String> {
         return SubjectMapper.toDTO(saved);
     }
 
+
+    // 🔹 UPDATE
+    public SubjectDTO update(SubjectDTO dto) {
+        Subject subject = subjectRepository.findById(dto.getIdSubject())
+                .orElseThrow(() -> new RuntimeException("Subject no encontrado"));
+
+        InstitutionPolicy policy = policyRepository.findById(1L).orElseGet(() -> {
+            InstitutionPolicy p = new InstitutionPolicy();
+            p.setMaxSessionsPerWeek(3);
+            return p;
+        });
+
+        int maxSessions = policy.getMaxSessionsPerWeek() != null ? policy.getMaxSessionsPerWeek() : 3;
+
+        if (dto.getSessionPerWeek() < 1 || dto.getSessionPerWeek() > maxSessions) {
+            throw new RuntimeException("Sesiones por semana inválidas (1-" + maxSessions + ")");
+        }
+
+        subject.setSubjectName(dto.getSubjectName());
+        subject.setSessionPerWeek(dto.getSessionPerWeek());
+        // durationMinutes stays at 120 (business rule)
+
+        Subject saved = subjectRepository.save(subject);
+        return SubjectMapper.toDTO(saved);
+    }
 
     @Override
     public void delete(String id) {

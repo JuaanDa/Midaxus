@@ -7,6 +7,7 @@
   <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
   <style>
     .screen { display: none; }
     .screen.active { display: block; }
@@ -135,10 +136,10 @@
         <div class="bg-white rounded-lg shadow-md p-6">
           <div class="flex justify-between items-center mb-6">
             <div>
-              <h1 class="text-2xl font-bold text-gray-800">Gestión de Sesiones</h1>
-              <p class="text-gray-600">Administra la asignación de profesores y cupos</p>
+              <h1 class="text-2xl font-bold text-gray-800">Gestión de Grupos de Curso</h1>
+              <p class="text-gray-600">Asigna materias a profesores con cupo. El horario lo gestiona cada estudiante.</p>
             </div>
-            <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg flex items-center gap-2" onclick="openCreateScheduleSessionModal()"><i class="fas fa-plus"></i> Nueva Sesión</button>
+            <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg flex items-center gap-2" onclick="openCreateScheduleSessionModal()"><i class="fas fa-plus"></i> Nuevo Grupo</button>
           </div>
           
           <div class="overflow-x-auto">
@@ -180,39 +181,29 @@
           </div>
         </div>
 
-        <!-- Modal Nueva Sesión (Schedule Session) -->
+        <!-- Modal Nuevo Grupo de Curso -->
         <div id="modal-create-schedule-session" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
           <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
-            <h2 class="text-xl font-bold text-gray-800 mb-4">Nueva Sesión de Clase</h2>
+            <h2 class="text-xl font-bold text-gray-800 mb-2">Nuevo Grupo de Curso</h2>
+            <p class="text-sm text-gray-500 mb-4">Asigna una materia a un profesor con cupo definido. El horario lo gestiona el estudiante.</p>
             
             <div class="mb-4">
-              <label class="block text-sm font-medium text-gray-700 mb-1">Curso / Grupo</label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Materia</label>
               <select id="create-session-course" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 outline-none">
-                <option value="">Seleccione un curso...</option>
+                <option value="">Seleccione una materia...</option>
               </select>
             </div>
 
             <div class="mb-4">
-              <label class="block text-sm font-medium text-gray-700 mb-1">Día</label>
-              <select id="create-session-day" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 outline-none">
-                <option value="MONDAY">Lunes</option>
-                <option value="TUESDAY">Martes</option>
-                <option value="WEDNESDAY">Miércoles</option>
-                <option value="THURSDAY">Jueves</option>
-                <option value="FRIDAY">Viernes</option>
-                <option value="SATURDAY">Sábado</option>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Profesor</label>
+              <select id="create-session-teacher" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 outline-none">
+                <option value="">Seleccione un profesor...</option>
               </select>
             </div>
-            
+
             <div class="mb-6">
-              <label class="block text-sm font-medium text-gray-700 mb-1">Bloque Horario</label>
-              <select id="create-session-slot" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 outline-none">
-                <option value="08:00-09:30">08:00 - 09:30</option>
-                <option value="09:45-11:15">09:45 - 11:15</option>
-                <option value="12:00-13:30">12:00 - 13:30</option>
-                <option value="14:00-15:30">14:00 - 15:30</option>
-                <option value="16:00-17:30">16:00 - 17:30</option>
-              </select>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Capacidad de Estudiantes</label>
+              <input type="number" id="create-session-capacity" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 outline-none" min="1" max="200" value="30">
             </div>
             
             <div class="flex justify-end gap-3">
@@ -242,6 +233,7 @@
                   <th class="p-3 border-b border-indigo-100">Nombre de la Materia</th>
                   <th class="p-3 border-b border-indigo-100">Sesiones / Semana</th>
                   <th class="p-3 border-b border-indigo-100">Duración (Mins)</th>
+                  <th class="p-3 border-b border-indigo-100">Acciones</th>
                 </tr>
               </thead>
               <tbody id="admin-subjects-table-body" class="divide-y divide-gray-100">
@@ -266,8 +258,8 @@
             </div>
             <div class="mb-4">
               <label class="block text-sm font-medium text-gray-700 mb-1">Sesiones por semana</label>
-              <input type="number" id="create-subject-sessions" min="1" max="4" value="2" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 outline-none">
-              <p class="text-xs text-gray-500 mt-1">Debe ser entre 1 y 4 sesiones.</p>
+              <input type="number" id="create-subject-sessions" min="1" max="3" value="2" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 outline-none">
+              <p class="text-xs text-gray-500 mt-1">Debe ser entre 1 y 3 sesiones.</p>
             </div>
             <div class="mb-6">
               <label class="block text-sm font-medium text-gray-700 mb-1">Duración por sesión (Minutos)</label>
@@ -278,6 +270,33 @@
             <div class="flex justify-end gap-3">
               <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors" onclick="closeCreateSubjectModal()">Cancelar</button>
               <button class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition-colors" onclick="createSubject()">Crear Materia</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Editar Materia -->
+        <div id="modal-edit-subject" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+          <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+            <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2"><i class="fas fa-edit text-indigo-600"></i> Editar Materia</h2>
+            <input type="hidden" id="edit-subject-id">
+            
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Código</label>
+              <p id="edit-subject-code-display" class="font-mono text-sm bg-gray-100 rounded-lg p-2 text-gray-500"></p>
+            </div>
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+              <input type="text" id="edit-subject-name" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 outline-none">
+            </div>
+            <div class="mb-6">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Sesiones por semana</label>
+              <input type="number" id="edit-subject-sessions" min="1" max="3" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500 outline-none">
+              <p class="text-xs text-gray-500 mt-1">Debe ser entre 1 y 3 sesiones.</p>
+            </div>
+            
+            <div class="flex justify-end gap-3">
+              <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors" onclick="closeEditSubjectModal()">Cancelar</button>
+              <button class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition-colors" onclick="saveEditSubject()"><i class="fas fa-save"></i> Guardar Cambios</button>
             </div>
           </div>
         </div>
@@ -405,6 +424,96 @@
         </div>
       </section>
       
+      <!-- ── STUDENT SCHEDULE BUILDER ── -->
+      <section id="screen-student-schedule" class="screen">
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+          <!-- Header -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+            <div>
+              <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-3">
+                <span class="bg-blue-100 text-blue-600 p-2 rounded-lg"><i class="fas fa-calendar-alt"></i></span>
+                Diseñar Mi Horario
+              </h1>
+              <p class="text-gray-500 mt-1">Arrastra tus materias inscritas a la grilla para organizar tu semana</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold flex items-center gap-2 transition-all shadow-sm hover:shadow-md" onclick="saveStudentSchedule()">
+                <i class="fas fa-save"></i> Guardar Horario
+              </button>
+              <button class="px-4 py-2 border border-gray-300 text-gray-600 rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-gray-50 transition" onclick="clearStudentSchedule()">
+                <i class="fas fa-eraser"></i> Limpiar
+              </button>
+            </div>
+          </div>
+
+          <!-- Policy Info Banner -->
+          <div id="student-schedule-policies" class="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-6">
+            <div class="flex items-start gap-3">
+              <i class="fas fa-info-circle text-blue-500 mt-0.5"></i>
+              <div class="text-sm text-blue-700">
+                <strong>Reglas del horario:</strong>
+                <ul class="mt-1 space-y-1 text-blue-600">
+                  <li>• No puedes colocar la misma materia en días consecutivos</li>
+                  <li>• El bloque de almuerzo está reservado y no admite clases</li>
+                  <li>• No se pueden sobreponer dos materias en el mismo bloque</li>
+                  <li id="policy-sessions-info">• Cada materia requiere un número específico de sesiones semanales</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pool: Enrolled courses to drag -->
+          <div id="student-pool-zone" class="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-dashed border-blue-200 rounded-xl p-5 transition-all duration-300"
+               ondragover="event.preventDefault(); this.classList.add('border-blue-500','bg-blue-100/50')"
+               ondragleave="this.classList.remove('border-blue-500','bg-blue-100/50')"
+               ondrop="onStudentPoolDrop(event)">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="bg-blue-500 text-white p-1.5 rounded-lg"><i class="fas fa-backpack text-sm"></i></span>
+              <span class="text-sm font-bold text-gray-700 uppercase tracking-wide">Mis Materias Inscritas</span>
+              <span class="bg-blue-600 text-white px-2.5 py-0.5 rounded-full text-xs font-bold" id="student-pool-count">0</span>
+              <span class="text-xs text-gray-400 ml-2"><i class="fas fa-hand-pointer"></i> Arrastra al horario</span>
+            </div>
+            <div id="student-pool-slots" class="flex flex-wrap gap-3 min-h-[52px]">
+              <!-- Dynamically filled -->
+            </div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="mb-6">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-medium text-gray-600">Progreso del horario</span>
+              <span id="schedule-progress-text" class="text-sm font-bold text-blue-600">0 / 0 sesiones asignadas</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2.5">
+              <div id="schedule-progress-bar" class="bg-gradient-to-r from-blue-500 to-indigo-500 h-2.5 rounded-full transition-all duration-500" style="width:0%"></div>
+            </div>
+          </div>
+
+          <!-- Schedule Grid -->
+          <div class="week-grid-scroll">
+            <div class="student-week-grid min-w-[720px] bg-gray-50 border border-gray-200 rounded-xl overflow-hidden shadow-inner">
+              <div class="grid grid-cols-[90px_repeat(6,1fr)] bg-gradient-to-r from-blue-50 to-indigo-50 border-b-2 border-blue-100">
+                <div class="py-3 px-2 text-center text-xs font-bold text-gray-400 uppercase">Hora</div>
+                <div class="py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Lunes</div>
+                <div class="py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Martes</div>
+                <div class="py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Miércoles</div>
+                <div class="py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Jueves</div>
+                <div class="py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Viernes</div>
+                <div class="py-3 text-center text-xs font-bold text-gray-700 uppercase tracking-wider">Sábado</div>
+              </div>
+              <div id="student-grid-body">
+                <!-- Dynamically filled -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Validation Messages -->
+          <div id="student-schedule-messages" class="mt-4 space-y-2">
+            <!-- Dynamically filled -->
+          </div>
+        </div>
+      </section>
+
       <!-- Placeholder para Grades -->
       <section id="screen-grades" class="screen">
         <div class="bg-white rounded-lg shadow-md p-6">

@@ -40,6 +40,13 @@ public class SubjectController {
     }
 
 
+    @PutMapping("/{id}")
+    public ResponseEntity<SubjectDTO> update(@PathVariable String id, @RequestBody SubjectDTO dto) {
+        dto.setIdSubject(id);
+        SubjectDTO updated = subjectService.update(dto);
+        return ResponseEntity.ok(updated);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable String id) {
         subjectService.delete(id);
