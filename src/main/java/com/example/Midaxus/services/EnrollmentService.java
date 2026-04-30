@@ -38,7 +38,14 @@ public class EnrollmentService implements IEnrollment<EnrollmentDTO, String> {
 
         // buscar entidades por ID
         Student student = studentRepository.findById(dto.getStudentId())
-                .orElseThrow(() -> new RuntimeException("Student no encontrado"));
+                .orElseGet(() -> studentRepository.findAll().stream()
+                        .filter(s -> 
+                            (s.getStudentId() != null && s.getStudentId().equals(dto.getStudentId())) ||
+                            (s.getId() != null && s.getId().equals(dto.getStudentId())) ||
+                            (s.getEmail() != null && s.getEmail().equals(dto.getStudentId()))
+                        )
+                        .findFirst()
+                        .orElseThrow(() -> new RuntimeException("Student no encontrado con el ID: " + dto.getStudentId())));
 
         CourseGroup courseGroup = courseGroupRepository.findById(dto.getCourseGroupId())
                 .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
@@ -51,14 +58,19 @@ public class EnrollmentService implements IEnrollment<EnrollmentDTO, String> {
         InstitutionPolicy policy = policyRepository.findById(1L).orElseGet(() -> {
             InstitutionPolicy p = new InstitutionPolicy();
             p.setStandardCapacity(40);
-            p.setCapacityTolerancePercent(10);
+            p.setCapacityTolerancePercent(0);
             return p;
         });
 
+        int stdCap = policy.getStandardCapacity() != null ? policy.getStandardCapacity() : 40;
+        int tolPct = policy.getCapacityTolerancePercent() != null ? policy.getCapacityTolerancePercent() : 0;
+
         //  capacidad (HU-14: control de aforo por grupo con un estándar y tolerancia)
         int current = enrollmentRepository.getAllByCourseGroup(courseGroup).size();
-        int baseCapacity = courseGroup.getCapacity() > 0 ? courseGroup.getCapacity() : policy.getStandardCapacity();
-        int maxAllowed = baseCapacity + (baseCapacity * policy.getCapacityTolerancePercent() / 100);
+        int baseCapacity = courseGroup.getCapacity() > 0 ? courseGroup.getCapacity() : stdCap;
+        int maxAllowed = baseCapacity + (baseCapacity * tolPct / 100);
+
+        if (maxAllowed <= 0) maxAllowed = 40; // Fallback por seguridad
 
         if (current >= maxAllowed) {
             throw new RuntimeException("Curso lleno (aforo máximo alcanzado)");

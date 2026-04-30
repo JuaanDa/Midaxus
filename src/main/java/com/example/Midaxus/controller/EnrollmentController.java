@@ -22,13 +22,22 @@ public class EnrollmentController {
 
     //  CREATE (inscribir estudiante)
     @PostMapping
-    public ResponseEntity<EnrollmentDTO> create(@RequestBody EnrollmentDTO dto) {
+    public ResponseEntity<?> create(@RequestBody EnrollmentDTO dto) {
+        System.out.println("=== LLEGO PETICION DE ENROLLMENT ===");
+        System.out.println("StudentId: " + dto.getStudentId());
+        System.out.println("CourseGroupId: " + dto.getCourseGroupId());
+        
+        try {
+            EnrollmentDTO created = enrollmentService.createEnrollment(dto);
 
-        EnrollmentDTO created = enrollmentService.createEnrollment(dto);
-
-        return ResponseEntity
-                .created(URI.create("/api/enrollments/" + created.getEnrollmentId()))
-                .body(created);
+            return ResponseEntity
+                    .created(URI.create("/api/enrollments/" + created.getEnrollmentId()))
+                    .body(created);
+        } catch (Throwable e) {
+            System.out.println("=== ERROR EN ENROLLMENT ===");
+            e.printStackTrace(); // Log in Docker
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     //  GET ALL
