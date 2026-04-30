@@ -9,14 +9,16 @@ public class ScheduleSession {
     @Id
     private String scheduleSessionId;
 
-    @Column(name = "schedule_id")
+    @ManyToOne
+    @JoinColumn(name = "schedule_id")
     private Schedule schedule;
 
     @ManyToOne
     @JoinColumn(name = "course_group_id")
     private CourseGroup courseGroup;
 
-    @Column(name = "room_id")
+    @ManyToOne
+    @JoinColumn(name = "room_id")
     private Room room;
 
     @ManyToOne

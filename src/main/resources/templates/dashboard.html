@@ -103,7 +103,7 @@
               <h1 class="text-2xl font-bold text-gray-800">Gestión de Sesiones</h1>
               <p class="text-gray-600">Administra la asignación de profesores y cupos</p>
             </div>
-            <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg flex items-center gap-2"><i class="fas fa-plus"></i> Nueva Sesión</button>
+            <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg flex items-center gap-2" onclick="openCreateScheduleSessionModal()"><i class="fas fa-plus"></i> Nueva Sesión</button>
           </div>
           
           <div class="overflow-x-auto">
@@ -141,6 +141,48 @@
             <div class="flex justify-end gap-3">
               <button class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50" onclick="closeEditSessionModal()">Cancelar</button>
               <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2" onclick="saveSessionAssignment()"><i class="fas fa-save"></i> Guardar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Nueva Sesión (Schedule Session) -->
+        <div id="modal-create-schedule-session" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+          <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Nueva Sesión de Clase</h2>
+            
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Curso / Grupo</label>
+              <select id="create-session-course" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 outline-none">
+                <option value="">Seleccione un curso...</option>
+              </select>
+            </div>
+
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Día</label>
+              <select id="create-session-day" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 outline-none">
+                <option value="MONDAY">Lunes</option>
+                <option value="TUESDAY">Martes</option>
+                <option value="WEDNESDAY">Miércoles</option>
+                <option value="THURSDAY">Jueves</option>
+                <option value="FRIDAY">Viernes</option>
+                <option value="SATURDAY">Sábado</option>
+              </select>
+            </div>
+            
+            <div class="mb-6">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Bloque Horario</label>
+              <select id="create-session-slot" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 outline-none">
+                <option value="08:00-09:30">08:00 - 09:30</option>
+                <option value="09:45-11:15">09:45 - 11:15</option>
+                <option value="12:00-13:30">12:00 - 13:30</option>
+                <option value="14:00-15:30">14:00 - 15:30</option>
+                <option value="16:00-17:30">16:00 - 17:30</option>
+              </select>
+            </div>
+            
+            <div class="flex justify-end gap-3">
+              <button class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50" onclick="closeCreateScheduleSessionModal()">Cancelar</button>
+              <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2" onclick="saveNewScheduleSession()"><i class="fas fa-save"></i> Crear</button>
             </div>
           </div>
         </div>
