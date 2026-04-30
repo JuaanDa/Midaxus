@@ -1,6 +1,8 @@
 package com.example.Midaxus.controller;
 
+import com.example.Midaxus.model.dtos.CourseGroupDTO;
 import com.example.Midaxus.model.dtos.EnrollmentDTO;
+import com.example.Midaxus.services.CourseGroupService;
 import com.example.Midaxus.services.EnrollmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,8 @@ public class EnrollmentController {
 
     @Autowired
     private EnrollmentService enrollmentService;
+    @Autowired
+    private CourseGroupService courseGroupService;
 
     //  CREATE (inscribir estudiante)
     @PostMapping
@@ -44,5 +48,12 @@ public class EnrollmentController {
     public ResponseEntity<Void> delete(@PathVariable String id) {
         enrollmentService.deleteEnrollment(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // GET COURSES BY STUDENT
+    @GetMapping("/student/{studentId}/courses")
+    public ResponseEntity<List<CourseGroupDTO>> getCoursesByStudent(@PathVariable String studentId) {
+
+        return ResponseEntity.ok(courseGroupService.getCoursesByStudent(studentId));
     }
 }

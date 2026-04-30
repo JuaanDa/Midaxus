@@ -27,6 +27,13 @@ public class CourseGroupController {
                 .body(created);
     }
 
+    // GET BY TEACHER
+    @GetMapping("/teacher/{teacherId}")
+    public ResponseEntity<List<CourseGroupDTO>> getByTeacher(@PathVariable String teacherId) {
+
+        return ResponseEntity.ok(service.getCoursesByTeacher(teacherId));
+    }
+
     //  UPDATE
     @PutMapping("/{id}")
     public ResponseEntity<CourseGroupDTO> update(@PathVariable String id, @RequestBody CourseGroupDTO dto) {
@@ -57,12 +64,6 @@ public class CourseGroupController {
         return ResponseEntity.noContent().build();
     }
 
-    //  GET BY TEACHER
-    @GetMapping("/teacher/{teacherId}")
-    public ResponseEntity<List<CourseGroupDTO>> getByTeacher(@PathVariable String teacherId) {
-
-        return ResponseEntity.ok(service.getByTeacher(teacherId));
-    }
 
     //  GET BY SUBJECT
     @GetMapping("/subject/{subjectId}")
@@ -70,4 +71,6 @@ public class CourseGroupController {
 
         return ResponseEntity.ok(service.getBySubject(subjectId));
     }
+
+
 }
