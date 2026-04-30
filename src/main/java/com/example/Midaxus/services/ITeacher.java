@@ -10,4 +10,5 @@ public interface ITeacher<T, ID> {
     T getTeacher(ID id);
     List<T> getTeachers();
 
+
 }
