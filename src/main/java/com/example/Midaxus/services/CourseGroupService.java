@@ -28,6 +28,9 @@ public class CourseGroupService implements ICourseGroup<CourseGroupDTO, String> 
     @Autowired
     private EnrollmentRepository enrollmentRepository;
 
+    @Autowired
+    private StudentRepository studentRepository;
+
     // 🔹 CREATE
     @Override
     public CourseGroupDTO create(CourseGroupDTO dto) {
@@ -64,14 +67,21 @@ public class CourseGroupService implements ICourseGroup<CourseGroupDTO, String> 
         CourseGroup existing = courseGroupRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("CourseGroup no encontrado"));
 
-        Teacher teacher = teacherRepository.findByTeacherCode(dto.getTeacherId())
-                .orElseThrow(() -> new RuntimeException("Teacher no encontrado"));
+        Teacher teacher = null;
+        if (dto.getTeacherId() != null && !dto.getTeacherId().isEmpty()) {
+            teacher = teacherRepository.findByTeacherCode(dto.getTeacherId())
+                    .orElseGet(() -> teacherRepository.findById(dto.getTeacherId()).orElse(null));
+        }
 
-        Subject subject = subjectRepository.findById(dto.getSubjectId())
-                .orElseThrow(() -> new RuntimeException("Subject no encontrado"));
+        Subject subject = existing.getSubject();
+        if (dto.getSubjectId() != null) {
+            subject = subjectRepository.findById(dto.getSubjectId()).orElse(existing.getSubject());
+        }
 
-        AcademicPeriod period = academicPeriodRepository.findById(dto.getAcademicPeriodId())
-                .orElseThrow(() -> new RuntimeException("Periodo no encontrado"));
+        AcademicPeriod period = existing.getAcademicPeriod();
+        if (dto.getAcademicPeriodId() != null) {
+            period = academicPeriodRepository.findById(dto.getAcademicPeriodId()).orElse(existing.getAcademicPeriod());
+        }
 
         existing.setTeacher(teacher);
         existing.setSubject(subject);
@@ -138,16 +148,39 @@ public class CourseGroupService implements ICourseGroup<CourseGroupDTO, String> 
     @Override
     public List<CourseGroupDTO> getCoursesByTeacher(String teacherId) {
         return CourseGroupMapper.toDTOList(
-                courseGroupRepository.findByTeacher_TeacherId(teacherId)
+                courseGroupRepository.findByTeacher_TeacherCode(teacherId)
         );
     }
 
     @Override
     public List<CourseGroupDTO> getCoursesByStudent(String studentId) {
 
-        return enrollmentRepository
-                .findByStudent_StudentIdAndStatus(studentId, EnrollmentStatus.ENROLLED)
-                .stream()
+        // Intentar buscar por studentId primero
+        List<Enrollment> enrollments = enrollmentRepository
+                .findByStudent_StudentIdAndStatus(studentId, EnrollmentStatus.ENROLLED);
+
+        // Si no encontró nada, intentar buscar al estudiante por su UUID (id de User)
+        if (enrollments.isEmpty()) {
+            Student student = studentRepository.findById(studentId).orElse(null);
+            if (student != null && student.getStudentId() != null) {
+                enrollments = enrollmentRepository
+                        .findByStudent_StudentIdAndStatus(student.getStudentId(), EnrollmentStatus.ENROLLED);
+            }
+        }
+
+        // Si aún no encontró nada, intentar buscar por email (fallback final)
+        if (enrollments.isEmpty()) {
+            Student student = studentRepository.findAll().stream()
+                    .filter(s -> s.getEmail() != null && s.getEmail().equals(studentId))
+                    .findFirst()
+                    .orElse(null);
+            if (student != null && student.getStudentId() != null) {
+                enrollments = enrollmentRepository
+                        .findByStudent_StudentIdAndStatus(student.getStudentId(), EnrollmentStatus.ENROLLED);
+            }
+        }
+
+        return enrollments.stream()
                 .map(Enrollment::getCourseGroup)
                 .map(CourseGroupMapper::toDTO)
                 .toList();

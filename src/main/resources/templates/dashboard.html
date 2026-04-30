@@ -93,6 +93,41 @@
             <!-- Dinámico -->
           </div>
         </div>
+
+        <!-- Cursos del Estudiante -->
+        <div id="student-courses" class="bg-white rounded-lg shadow-md mt-6 p-6" style="display:none;">
+          <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2"><i class="fas fa-book text-blue-600"></i> Mis Clases Inscritas</h3>
+          <div id="student-courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+             <!-- Se llenará vía JS -->
+          </div>
+        </div>
+
+        <!-- Cursos del Docente -->
+        <div id="teacher-courses" class="bg-white rounded-lg shadow-md mt-6 p-6" style="display:none;">
+          <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2"><i class="fas fa-chalkboard-teacher text-indigo-600"></i> Mis Clases Asignadas</h3>
+          <div id="teacher-courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+             <!-- Se llenará vía JS -->
+          </div>
+        </div>
+        
+        <!-- Modal Matriculación Estudiante -->
+        <div id="modal-enroll-course" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+          <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+            <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2"><i class="fas fa-plus-circle text-green-600"></i> Matricularse en una Clase</h2>
+            
+            <div class="mb-6">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Clases Disponibles</label>
+              <select id="enroll-course-select" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-green-500 outline-none">
+                <option value="">Seleccione una clase...</option>
+              </select>
+            </div>
+            
+            <div class="flex justify-end gap-3">
+              <button class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition" onclick="closeEnrollModal()">Cancelar</button>
+              <button class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg flex items-center gap-2 shadow transition" onclick="saveEnrollment()"><i class="fas fa-check"></i> Inscribirse</button>
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- ── COURSES (Gestión de Sesiones) ── -->
