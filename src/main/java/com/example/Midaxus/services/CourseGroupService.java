@@ -1,15 +1,10 @@
 package com.example.Midaxus.services;
 
 import com.example.Midaxus.model.dtos.CourseGroupDTO;
-import com.example.Midaxus.model.entities.AcademicPeriod;
-import com.example.Midaxus.model.entities.CourseGroup;
-import com.example.Midaxus.model.entities.Subject;
-import com.example.Midaxus.model.entities.Teacher;
+import com.example.Midaxus.model.entities.*;
+import com.example.Midaxus.model.enums.EnrollmentStatus;
 import com.example.Midaxus.model.mapper.CourseGroupMapper;
-import com.example.Midaxus.repositories.AcademicPeriodRepository;
-import com.example.Midaxus.repositories.CourseGroupRepository;
-import com.example.Midaxus.repositories.SubjectRepository;
-import com.example.Midaxus.repositories.TeacherRepository;
+import com.example.Midaxus.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +24,9 @@ public class CourseGroupService implements ICourseGroup<CourseGroupDTO, String> 
 
     @Autowired
     private AcademicPeriodRepository academicPeriodRepository;
+
+    @Autowired
+    private EnrollmentRepository enrollmentRepository;
 
     // 🔹 CREATE
     @Override
@@ -135,4 +133,25 @@ public class CourseGroupService implements ICourseGroup<CourseGroupDTO, String> 
                 courseGroupRepository.findAllBySubject(subject)
         );
     }
+
+    //Metodo para que el profesor pueda ver cursos tiene asignados
+    @Override
+    public List<CourseGroupDTO> getCoursesByTeacher(String teacherId) {
+        return CourseGroupMapper.toDTOList(
+                courseGroupRepository.findByTeacher_TeacherId(teacherId)
+        );
+    }
+
+    @Override
+    public List<CourseGroupDTO> getCoursesByStudent(String studentId) {
+
+        return enrollmentRepository
+                .findByStudent_StudentIdAndStatus(studentId, EnrollmentStatus.ENROLLED)
+                .stream()
+                .map(Enrollment::getCourseGroup)
+                .map(CourseGroupMapper::toDTO)
+                .toList();
+    }
+
+
 }

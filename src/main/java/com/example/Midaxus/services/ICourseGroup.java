@@ -22,4 +22,7 @@ public interface ICourseGroup<T, K> {
 
     // Buscar por subject
     List<T> getBySubject(K subjectId);
+
+    List<T> getCoursesByTeacher(K teacherId);
+    List<T> getCoursesByStudent(K subjectId);
 }
