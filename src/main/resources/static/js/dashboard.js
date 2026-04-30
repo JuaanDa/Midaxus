@@ -557,13 +557,15 @@ let allTeachersData = [];
 
 async function loadAdminCourses() {
   try {
-    const [coursesRes, teachersRes] = await Promise.all([
+    const [coursesRes, teachersRes, subjectsRes] = await Promise.all([
       fetch('/api/course-groups', { headers: { 'Authorization': 'Bearer ' + rawAuth?.token } }),
-      fetch('/api/teachers', { headers: { 'Authorization': 'Bearer ' + rawAuth?.token } })
+      fetch('/api/teachers', { headers: { 'Authorization': 'Bearer ' + rawAuth?.token } }),
+      fetch('/api/subjects', { headers: { 'Authorization': 'Bearer ' + rawAuth?.token } })
     ]);
     
     if (coursesRes.ok) adminCoursesData = await coursesRes.json();
     if (teachersRes.ok) allTeachersData = await teachersRes.json();
+    if (subjectsRes.ok) window.allSubjectsList = await subjectsRes.json();
     
     renderAdminCourses();
     populateTeacherSelect();
@@ -588,10 +590,14 @@ function renderAdminCourses() {
     const teacher = allTeachersData.find(t => t.teacherId === cg.teacherId || t.teacherCode === cg.teacherId);
     const teacherName = teacher ? teacher.name : (cg.teacherId || "Sin asignar");
     
+    // Buscar nombre de la materia
+    const subj = window.allSubjectsList?.find(s => s.idSubject === cg.code || s.idSubject === cg.subjectId);
+    const subjName = subj ? subj.subjectName : (cg.subjectId || "Materia");
+    
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${cg.code || "N/A"}</td>
-      <td>${cg.subjectId || "Materia"}</td>
+      <td>${subjName}</td>
       <td>${teacherName}</td>
       <td>${cg.capacity || 0}</td>
       <td>
@@ -669,6 +675,115 @@ async function saveSessionAssignment() {
   } catch(err) {
     console.error(err);
     toast("Error de red", "error");
+  }
+}
+
+async function openCreateScheduleSessionModal() {
+  const select = document.getElementById("create-session-course");
+  select.innerHTML = '<option value="">Cargando...</option>';
+  document.getElementById("modal-create-schedule-session").style.display = "flex";
+
+  try {
+    let courses = [...adminCoursesData];
+    let subjects = [];
+    
+    // Always load subjects to ensure they can select any subject
+    const res = await fetch('/api/subjects', { headers: { 'Authorization': 'Bearer ' + rawAuth?.token } });
+    if (res.ok) {
+        subjects = await res.json();
+    }
+
+    select.innerHTML = '<option value="">Seleccione un curso o materia...</option>';
+    
+    // First: existing courses
+    courses.forEach(cg => {
+      const opt = document.createElement("option");
+      opt.value = cg.courseGroupId || cg.code;
+      
+      // Intentar buscar el nombre de la materia si cg.subjectId es un ID
+      let subjName = cg.subjectId || 'Materia';
+      const subj = subjects.find(s => s.idSubject === cg.code || s.idSubject === cg.subjectId);
+      if (subj) subjName = subj.subjectName;
+
+      opt.textContent = `${cg.code || 'N/A'} - ${subjName} (Curso Activo)`;
+      opt.dataset.code = cg.code;
+      opt.dataset.teacher = cg.teacherId || '';
+      select.appendChild(opt);
+    });
+
+    // Second: subjects that do not have a course yet
+    subjects.forEach(s => {
+      if (!courses.some(cg => cg.code === s.idSubject)) {
+        const opt = document.createElement("option");
+        opt.value = s.idSubject; // will act as code
+        opt.textContent = `${s.idSubject} - ${s.subjectName} (Nueva Materia)`;
+        opt.dataset.code = s.idSubject;
+        opt.dataset.teacher = '';
+        select.appendChild(opt);
+      }
+    });
+
+    if (courses.length === 0 && subjects.length === 0) {
+        select.innerHTML = '<option value="">No hay materias creadas (Catálogo vacío)</option>';
+    }
+  } catch(e) {
+      console.error(e);
+      select.innerHTML = '<option value="">Error cargando datos</option>';
+  }
+}
+
+function closeCreateScheduleSessionModal() {
+  document.getElementById("modal-create-schedule-session").style.display = "none";
+}
+
+async function saveNewScheduleSession() {
+  const courseSelect = document.getElementById("create-session-course");
+  const courseGroupId = courseSelect.value;
+  if (!courseGroupId) {
+    toast("Debe seleccionar un curso", "error");
+    return;
+  }
+  
+  const selectedOption = courseSelect.options[courseSelect.selectedIndex];
+  const courseCode = selectedOption.dataset.code;
+  const teacher = selectedOption.dataset.teacher;
+  const day = document.getElementById("create-session-day").value;
+  const slot = document.getElementById("create-session-slot").value;
+
+  const payload = {
+      courseGroupId: courseGroupId,
+      courseCode: courseCode,
+      day: day,
+      slot: slot,
+      teacher: teacher
+  };
+
+  try {
+      const res = await fetch('/api/schedule-sessions', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + rawAuth?.token
+          },
+          body: JSON.stringify(payload)
+      });
+      
+      if (res.ok) {
+          const data = await res.json();
+          toast("Sesión creada exitosamente", "success");
+          closeCreateScheduleSessionModal();
+          
+          if (data.warnings && data.warnings.length > 0) {
+              data.warnings.forEach(w => {
+                  toast(w, "warning");
+              });
+          }
+      } else {
+          toast("Error al crear la sesión", "error");
+      }
+  } catch (err) {
+      console.error(err);
+      toast("Error de red", "error");
   }
 }
 
@@ -917,11 +1032,13 @@ function checkConsecutiveDays(courseCode, courseGroup, toDay, fromDay) {
   return true;
 }
 
-function cellDrop(e) {
+async function cellDrop(e) {
   e.preventDefault();
   const cell = e.currentTarget;
   cell.classList.remove("over","clash");
   const { slot:toSlot, day:toDay } = cell.dataset;
+
+  let movedItem = null;
 
   if (dragSrc?.from === "cell") {
     const { slot:fromSlot, day:fromDay } = dragSrc;
@@ -929,14 +1046,15 @@ function cellDrop(e) {
     const s = scheduleData[fromSlot]?.[fromDay];
     if (!s) { dragSrc=null; return; }
     
-    // HU-12: Validate consecutive days
-    if (!checkConsecutiveDays(s.code, s.group, toDay, fromDay)) { dragSrc=null; return; }
+    // We will let the backend handle the soft warning, but if we have local blocking validations we keep them here.
+    // We remove local block for checkConsecutiveDays since backend handles it as Soft Warning.
     
     const existing = scheduleData[toSlot]?.[toDay];
     if (!scheduleData[toSlot]) scheduleData[toSlot] = {};
     scheduleData[toSlot][toDay] = s;
     if (existing) scheduleData[fromSlot][fromDay] = existing;
     else          delete scheduleData[fromSlot][fromDay];
+    movedItem = s;
     toast(`${s.code} → ${toDay} ${toSlot}`, "success");
 
   } else if (dragSrc?.from === "pool") {
@@ -944,12 +1062,10 @@ function cellDrop(e) {
     if (!item) { dragSrc=null; return; }
     if (scheduleData[toSlot]?.[toDay]) { toast("That cell is occupied","error"); dragSrc=null; return; }
     
-    // HU-12: Validate consecutive days (no fromDay)
-    if (!checkConsecutiveDays(item.code, item.group, toDay, null)) { dragSrc=null; return; }
-    
     if (!scheduleData[toSlot]) scheduleData[toSlot] = {};
     scheduleData[toSlot][toDay] = { ...item };
     pool.splice(dragSrc.idx, 1);
+    movedItem = item;
     toast(`${item.code} scheduled on ${toDay} ${toSlot}`, "success");
   }
 
@@ -957,6 +1073,40 @@ function cellDrop(e) {
   buildScheduleGrid(true);
   buildPool();
   hideInspector();
+
+  // Call API to save the session and check for soft warnings
+  if (movedItem) {
+      try {
+          const payload = {
+              courseGroupId: movedItem.group, // Assuming this maps
+              courseCode: movedItem.code,
+              day: toDay,
+              slot: toSlot,
+              teacher: movedItem.teacher
+          };
+          
+          const res = await fetch('/api/schedule-sessions', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': 'Bearer ' + rawAuth?.token
+              },
+              body: JSON.stringify(payload)
+          });
+          
+          if (res.ok) {
+              const data = await res.json();
+              if (data.warnings && data.warnings.length > 0) {
+                  data.warnings.forEach(w => {
+                      // Soft warning alert!
+                      toast(w, "warning");
+                  });
+              }
+          }
+      } catch (err) {
+          console.error("Failed to save schedule session to API", err);
+      }
+  }
 }
 
 // ─── Inspector ────────────────────────────────────────────────────────────────
@@ -1006,7 +1156,12 @@ function toast(msg, type="info") {
   if (!root) return;
   const t = document.createElement("div");
   t.className = "toast " + type;
-  const icons = { success:"fa-check-circle", error:"fa-exclamation-circle", info:"fa-info-circle" };
+  if (type === "warning") {
+      t.style.backgroundColor = "#fff3cd";
+      t.style.color = "#856404";
+      t.style.borderLeft = "4px solid #ffeeba";
+  }
+  const icons = { success:"fa-check-circle", error:"fa-exclamation-circle", info:"fa-info-circle", warning:"fa-exclamation-triangle" };
   t.innerHTML = `<i class="fas ${icons[type]||icons.info}"></i> ${msg}`;
   root.appendChild(t);
   setTimeout(() => { t.style.transition=".3s"; t.style.opacity="0"; t.style.transform="translateX(28px)"; }, 3000);

@@ -5,8 +5,10 @@ import com.example.Midaxus.model.entities.CourseGroup;
 
 import java.time.DayOfWeek;
 import java.util.*;
+import org.springframework.stereotype.Service;
 import java.util.stream.Collectors;
 
+@Service
 public class ScheduleValidationService implements IScheduleValidation {
 
     @Override
