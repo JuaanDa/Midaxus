@@ -26,7 +26,7 @@ public class InstitutionPolicyService implements IInstitutionPolicy {
             defaultPolicy.setLunchEndTime(LocalTime.of(13, 30));
             defaultPolicy.setStandardCapacity(40);
             defaultPolicy.setCapacityTolerancePercent(10);
-            defaultPolicy.setMaxSessionsPerWeek(4);
+            defaultPolicy.setMaxSessionsPerWeek(3);
             return repository.save(defaultPolicy);
         });
         return toDTO(policy);
