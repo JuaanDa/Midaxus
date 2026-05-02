@@ -38,6 +38,6 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
       - name: Build and analyze
         env:
-          SONAR_TOKEN: $sqp_1284b2a6446db81220a2180b03c097ed10236d0b
-          SONAR_HOST_URL: $http://localhost:9000
+          SONAR_TOKEN: sqp_1284b2a6446db81220a2180b03c097ed10236d0b
+          SONAR_HOST_URL: http://localhost:9000
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=JuaanDa_Midaxus_83863a29-c3fd-48df-a78d-e43d1667f51a -Dsonar.projectName='Midaxus'
