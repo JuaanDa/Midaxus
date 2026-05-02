@@ -39,4 +39,4 @@ jobs:
         env:
           SONAR_TOKEN: sqp_ab6466f3873f1224b85fffc9894ccd893cf645eb
           SONAR_HOST_URL: http://localhost:9000
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=JuaanDa_Midaxus_83863a29-c3fd-48df-a78d-e43d1667f51a -Dsonar.projectName='Midaxus'
+        run: mvn clean verify sonar:sonar -Dsonar.projectKey=JuaanDa_Midaxus_83863a29-c3fd-48df-a78d-e43d1667f51a -Dsonar.projectName='Midaxus' -Dsonar.host.url=http://localhost:9000 -Dsonar.login=$SONAR_TOKEN
