@@ -10,7 +10,11 @@ jobs:
   build:
     name: Build and analyze
     runs-on: ubuntu-latest
-    
+
+     
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  # Forzar el uso de Node.js 24
+
     steps:
       - uses: actions/checkout@v4
         with:
